@@ -363,11 +363,11 @@ module.exports.sendAppStartMsgToSysadmins=function(appConfig, callback){        
         }else msgStr=msgStr+" - valid";
     } else msgStr=msgStr+"<b>\ndailySalesRetSchedule</b> NOT SPECIFIED";
     if(appConfig["cashierSchedule"]){                                                                        logger.info("cashierSchedule=",appConfig["cashierSchedule"]);
-        msgStr=msgStr+"<b>\ncashierSchedule:</b>"+appConfig["cashierSchedule"];
-        if(cron.validate(appConfig["cashierSchedule"])==false){                                              logger.error("cashierSchedule NOT VALID");
+        msgStr=msgStr+"<b>\ndCardClientsSchedule:</b>"+appConfig["dCardClientsSchedule"];
+        if(cron.validate(appConfig["dCardClientsSchedule"])==false){                                              logger.error("dCardClientsSchedule NOT VALID");
             msgStr=msgStr+" - NOT VALID";
         }else msgStr=msgStr+" - valid";
-    } else msgStr=msgStr+"<b>\ncashierSchedule</b> NOT SPECIFIED";
+    } else msgStr=msgStr+"<b>\ndCardClientsSchedule</b> NOT SPECIFIED";
     database.connectToDB(function(err){
         if (err){
             bot.sendMsgToAdmins(msgStr+"\n Failed to connect to database! Reason:"+err);

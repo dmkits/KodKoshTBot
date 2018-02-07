@@ -11,7 +11,7 @@
   "adminSchedule":"*/15 * * * * *",
   "dailySalesRetSchedule":"*/15 * * * * *",
   "dailySalesRetUsers":["380675612300","380637868770"],
-  "cashierSchedule":"*/20 * * * * *",
+  "dCardClientsSchedule":"*/20 * * * * *",
   "sysadminsMsgConfig":{
     "system":"/","backup":"/home/ianagez/IdeaProjects/GabisUA/backup/",
     "dbBackupFileName":"GMSData38_*.rar"

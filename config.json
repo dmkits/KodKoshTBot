@@ -11,7 +11,7 @@
   "adminSchedule":"",
   "dailySalesRetSchedule":"",
   "dailySalesRetUsers":[],
-  "cashierSchedule":"",
+  "dCardClientsSchedule":"",
   "sysadminsMsgConfig":{
     "system":"C:","backup":"C:/GMSServer/BackUp/",
     "dbBackupFileName":"GMSData38_*.rar"
