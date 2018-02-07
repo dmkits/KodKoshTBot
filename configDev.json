@@ -1,0 +1,19 @@
+{
+  "dbHost":"",
+  "dbPort":"",
+  "database":"",
+  "dbUser":"",
+  "dbPassword":"",
+  "appPort":"8080",
+  "botToken":"525453016:AAGDfQLPR5fOeU02_6VsQEyPdkQHnJJa6Qk",
+  "sysadmins":[],
+  "sysadminsSchedule":"",
+  "adminSchedule":"",
+  "dailySalesRetSchedule":"",
+  "dailySalesRetUsers":[],
+  "cashierSchedule":"",
+  "sysadminsMsgConfig":{
+    "system":"C:","backup":"C:/GMSServer/BackUp/",
+    "dbBackupFileName":"GMSData38_*.rar"
+  }
+}
