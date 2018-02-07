@@ -76,16 +76,16 @@ module.exports.checkPhoneAndWriteChatID=function(phoneNum, chatId, callback){
     })
 };
 
-module.exports.getClientsFor=function(callback){
+module.exports.getClientsForSendingMsg=function(callback){
     var request = new mssql.Request();
-    request.query("select TChatID from r_Emps where ShiftPostID=1 and LTRIM(ISNULL(Mobile,''))<>'' and LTRIM(ISNULL(TChatID,''))<>''",
+    request.query("select TChatID from r_DCards where LTRIM(ISNULL(PhoneMob,''))<>'' and LTRIM(ISNULL(TChatID,''))<>''",
         function(err,res){
             if(err){
                 callback(err);
                 return;
             }
             if(!res.recordset || res.recordset.length==0){
-                callback({err:"Не удалось найти ни одного номера телефона в справочнике администраторов."});
+                callback({err:"Не удалось найти ни одного клиента для рассылки сообщений."});
                 return;
             }
             callback(null,res.recordset);

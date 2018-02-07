@@ -36,22 +36,15 @@ function startSendingSysAdminMsgBySchedule(){                                   
 }
 
 function startSendingDCardClientsMsgBySchedule(){                                                           logger.info("startSendingDCardClientsMsgBySchedule");
-    var sysAdminSchedule=appConfig.dCardClientsSchedule;
-    var sysadminsMsgConfig = appConfig.sysadminsMsgConfig;
-    if(!sysAdminSchedule||cron.validate(sysAdminSchedule)==false||!sysadminsMsgConfig )return;
-    var scheduleSysAdminMsg =cron.schedule(sysAdminSchedule,
-        function(){
-            msgManager.makeDiskUsageMsg(sysadminsMsgConfig, function(err, adminMsg){
-                if(err){
-                    logger.error("FAILED to make disk usage msg. Reason: "+err);
-                    return;
-                }
-                bot.sendMsgToAdmins(adminMsg);
-            });
-        });
-    scheduleSysAdminMsg.start();
-}
+    var dCardClientsSchedule=appConfig.dCardClientsSchedule;
 
+    if(!dCardClientsSchedule||cron.validate(dCardClientsSchedule)==false)return;
+    var scheduledCardClientsMsg =cron.schedule(dCardClientsSchedule,
+        function(){
+            msgManager.makeAndSendDCardClientsMsg();
+        });
+    scheduledCardClientsMsg.start();
+}
 
 app.listen(appPort);
 

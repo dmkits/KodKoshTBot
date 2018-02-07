@@ -85,3 +85,64 @@
 {"level":"info","message":"cashierSchedule= */20 * * * * *","timestamp":"2018-02-07 15:01:06"}
 {"level":"info","message":"startSendingSysAdminMsgBySchedule","timestamp":"2018-02-07 15:01:06"}
 {"level":"info","message":"Sending msg to sysadmin. Chat ID: 491124507","timestamp":"2018-02-07 15:01:06"}
+{"level":"info","message":"sendAppStartMsgToSysadmins","timestamp":"2018-02-07 16:44:10"}
+{"level":"info","message":"sysadminsSchedule= */14 * * * * *","timestamp":"2018-02-07 16:44:10"}
+{"level":"info","message":"adminSchedule= */15 * * * * *","timestamp":"2018-02-07 16:44:10"}
+{"level":"info","message":"dailySalesRetSchedule= */15 * * * * *","timestamp":"2018-02-07 16:44:10"}
+{"level":"info","message":"sendAppStartMsgToSysadmins","timestamp":"2018-02-07 16:44:55"}
+{"level":"info","message":"sysadminsSchedule= */14 * * * * *","timestamp":"2018-02-07 16:44:55"}
+{"level":"info","message":"adminSchedule= */15 * * * * *","timestamp":"2018-02-07 16:44:55"}
+{"level":"info","message":"dailySalesRetSchedule= */15 * * * * *","timestamp":"2018-02-07 16:44:55"}
+{"level":"error","message":"----------------- FAILED to get admin list. Reason: Error: ENOENT: no such file or directory, open '/home/ianagez/IdeaProjects/KodKoshTBot/sysadmins.json'","timestamp":"2018-02-07 16:44:55"}
+{"level":"info","message":"startSendingSysAdminMsgBySchedule","timestamp":"2018-02-07 16:44:55"}
+{"level":"info","message":"startSendingDCardClientsMsgBySchedule","timestamp":"2018-02-07 16:44:55"}
+{"level":"error","message":"----------------- FAILED to get admin list. Reason: Error: ENOENT: no such file or directory, open '/home/ianagez/IdeaProjects/KodKoshTBot/sysadmins.json'","timestamp":"2018-02-07 16:44:56"}
+{"level":"error","message":"----------------- FAILED to get admin list. Reason: Error: ENOENT: no such file or directory, open '/home/ianagez/IdeaProjects/KodKoshTBot/sysadmins.json'","timestamp":"2018-02-07 16:45:00"}
+{"level":"error","message":"----------------- FAILED to get admin list. Reason: Error: ENOENT: no such file or directory, open '/home/ianagez/IdeaProjects/KodKoshTBot/sysadmins.json'","timestamp":"2018-02-07 16:45:14"}
+{"level":"info","message":"New chat started. Greeting msg is sending. Chat ID: 491124507","timestamp":"2018-02-07 16:45:18"}
+{"level":"info","message":"New sysadmin registered successfully. Msg is sending.  Phone number: 380637868770","timestamp":"2018-02-07 16:45:20"}
+{"level":"info","message":"Disk usage msg is sending for new sysadmin.  Phone number: 380637868770","timestamp":"2018-02-07 16:45:20"}
+{"level":"info","message":"Sending msg to sysadmin. Chat ID: 491124507","timestamp":"2018-02-07 16:45:28"}
+{"level":"info","message":"sendAppStartMsgToSysadmins","timestamp":"2018-02-07 16:45:33"}
+{"level":"info","message":"sysadminsSchedule= */14 * * * * *","timestamp":"2018-02-07 16:45:33"}
+{"level":"info","message":"adminSchedule= */15 * * * * *","timestamp":"2018-02-07 16:45:33"}
+{"level":"info","message":"dailySalesRetSchedule= */15 * * * * *","timestamp":"2018-02-07 16:45:33"}
+{"level":"info","message":"startSendingSysAdminMsgBySchedule","timestamp":"2018-02-07 16:45:34"}
+{"level":"info","message":"Sending msg to sysadmin. Chat ID: 491124507","timestamp":"2018-02-07 16:45:34"}
+{"level":"info","message":"startSendingDCardClientsMsgBySchedule","timestamp":"2018-02-07 16:45:34"}
+{"level":"info","message":"Sending msg to sysadmin. Chat ID: 491124507","timestamp":"2018-02-07 16:45:42"}
+{"level":"info","message":"sendAppStartMsgToSysadmins","timestamp":"2018-02-07 17:43:21"}
+{"level":"info","message":"sysadminsSchedule= */14 * * * * *","timestamp":"2018-02-07 17:43:21"}
+{"level":"info","message":"adminSchedule= */15 * * * * *","timestamp":"2018-02-07 17:43:21"}
+{"level":"info","message":"dailySalesRetSchedule= */15 * * * * *","timestamp":"2018-02-07 17:43:21"}
+{"level":"error","message":"----------------- FAILED to get admin list. Reason: Error: ENOENT: no such file or directory, open '/home/ianagez/IdeaProjects/KodKoshTBot/sysadmins.json'","timestamp":"2018-02-07 17:43:21"}
+{"level":"info","message":"startSendingSysAdminMsgBySchedule","timestamp":"2018-02-07 17:43:21"}
+{"level":"info","message":"startSendingDCardClientsMsgBySchedule","timestamp":"2018-02-07 17:43:21"}
+{"level":"error","message":"----------------- FAILED to get admin list. Reason: Error: ENOENT: no such file or directory, open '/home/ianagez/IdeaProjects/KodKoshTBot/sysadmins.json'","timestamp":"2018-02-07 17:43:28"}
+{"level":"info","message":"Msg is sending to chat id:491124507. MSG: Дорогой клиент, рады сообщить, что Вы получили это сообщение!.","timestamp":"2018-02-07 17:43:40"}
+{"level":"info","message":"All messages was sent successfully to clients!","timestamp":"2018-02-07 17:43:41"}
+{"level":"error","message":"----------------- FAILED to get admin list. Reason: Error: ENOENT: no such file or directory, open '/home/ianagez/IdeaProjects/KodKoshTBot/sysadmins.json'","timestamp":"2018-02-07 17:43:42"}
+{"level":"info","message":"sendAppStartMsgToSysadmins","timestamp":"2018-02-07 17:44:08"}
+{"level":"info","message":"sysadminsSchedule= */14 * * * * *","timestamp":"2018-02-07 17:44:08"}
+{"level":"info","message":"adminSchedule= */15 * * * * *","timestamp":"2018-02-07 17:44:08"}
+{"level":"info","message":"dailySalesRetSchedule= */15 * * * * *","timestamp":"2018-02-07 17:44:08"}
+{"level":"info","message":"startSendingSysAdminMsgBySchedule","timestamp":"2018-02-07 17:44:08"}
+{"level":"error","message":"----------------- FAILED to get admin list. Reason: Error: ENOENT: no such file or directory, open '/home/ianagez/IdeaProjects/KodKoshTBot/sysadmins.json'","timestamp":"2018-02-07 17:44:08"}
+{"level":"info","message":"startSendingDCardClientsMsgBySchedule","timestamp":"2018-02-07 17:44:08"}
+{"level":"error","message":"----------------- FAILED to get admin list. Reason: Error: ENOENT: no such file or directory, open '/home/ianagez/IdeaProjects/KodKoshTBot/sysadmins.json'","timestamp":"2018-02-07 17:44:14"}
+{"level":"info","message":"sendAppStartMsgToSysadmins","timestamp":"2018-02-07 17:44:19"}
+{"level":"info","message":"sysadminsSchedule= */14 * * * * *","timestamp":"2018-02-07 17:44:19"}
+{"level":"info","message":"adminSchedule= */15 * * * * *","timestamp":"2018-02-07 17:44:19"}
+{"level":"info","message":"dailySalesRetSchedule= */15 * * * * *","timestamp":"2018-02-07 17:44:19"}
+{"level":"info","message":"startSendingSysAdminMsgBySchedule","timestamp":"2018-02-07 17:44:19"}
+{"level":"error","message":"----------------- FAILED to get admin list. Reason: Error: ENOENT: no such file or directory, open '/home/ianagez/IdeaProjects/KodKoshTBot/sysadmins.json'","timestamp":"2018-02-07 17:44:19"}
+{"level":"info","message":"startSendingDCardClientsMsgBySchedule","timestamp":"2018-02-07 17:44:19"}
+{"level":"info","message":"Msg is sending to chat id:491124507. MSG: Дорогой клиент, рады сообщить, что Вы получили это сообщение!.","timestamp":"2018-02-07 17:44:20"}
+{"level":"info","message":"All messages was sent successfully to clients!","timestamp":"2018-02-07 17:44:20"}
+{"level":"error","message":"----------------- FAILED to get admin list. Reason: Error: ENOENT: no such file or directory, open '/home/ianagez/IdeaProjects/KodKoshTBot/sysadmins.json'","timestamp":"2018-02-07 17:44:28"}
+{"level":"info","message":"New chat started. Greeting msg is sending. Chat ID: 491124507","timestamp":"2018-02-07 17:44:39"}
+{"level":"info","message":"Msg is sending to chat id:491124507. MSG: Дорогой клиент, рады сообщить, что Вы получили это сообщение!.","timestamp":"2018-02-07 17:44:40"}
+{"level":"info","message":"All messages was sent successfully to clients!","timestamp":"2018-02-07 17:44:40"}
+{"level":"info","message":"New sysadmin registered successfully. Msg is sending.  Phone number: 380637868770","timestamp":"2018-02-07 17:44:42"}
+{"level":"info","message":"Sending msg to sysadmin. Chat ID: 491124507","timestamp":"2018-02-07 17:44:42"}
+{"level":"info","message":"Disk usage msg is sending for new sysadmin.  Phone number: 380637868770","timestamp":"2018-02-07 17:44:42"}

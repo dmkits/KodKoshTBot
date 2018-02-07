@@ -39,45 +39,6 @@ module.exports.makeDiskUsageMsg=function(sysadminsMsgConfig, callback){
     });
 };
 
-module.exports.makeUnconfirmedDocsMsg =function(callback){
-    var adminMsg='<b>Информация администратору на '+moment(new Date()).format('HH:mm DD.MM.YYYY')+' </b> \n';
-    database.getTRecData(function(err, res){
-        if(err){
-            callback(err);
-            return;
-        }
-        var tRecArr=res;
-        if(tRecArr.length==0) {
-            adminMsg+="\n<b>Все приходные накладные подтверждены.</b>";
-            callback(null,adminMsg);
-        }else{
-            adminMsg+="<b>Неподтвержденные приходные накладные:</b> ";
-            for (var i in tRecArr){
-                var dataItem=tRecArr[i];
-                adminMsg+="\n &#12539 "+dataItem.StockName+": "+dataItem.Total;
-            }
-        }
-        database.getTExcData(function(err, res){
-            if(err){
-                callback(err);
-                return;
-            }
-            var tExpArr=res;
-            if(tExpArr.length==0) {
-                adminMsg+="\n<b>Все  накладные перемещения подтверждены.</b>";
-                callback(null,adminMsg);
-                return;
-            }
-            adminMsg+="\n<b>Неподтвержденные накладные перемещения:</b>";
-            for (var k in tExpArr){
-                var dataItem=tExpArr[k];
-                adminMsg+="\n &#12539 "+dataItem.StockName+": "+dataItem.Total;
-            }
-            callback(null,adminMsg);
-        })
-    });
-};
-
 function getDiscUsageInfo(sysadminsMsgConfig, callback) {
     var system = sysadminsMsgConfig.system ? sysadminsMsgConfig.system.trim() : "";
     var backup = sysadminsMsgConfig.backup ? sysadminsMsgConfig.backup.trim() : "";
@@ -157,183 +118,6 @@ function getLastBackupFile(sysadminsMsgConfig, callback){
     }
     callback(null, lastBackpupFile);
 }
-
-module.exports.makeCashierMsg=function(cashierData, callback){
-    var stockID=cashierData["StockID"];
-    var StockName=cashierData["StockName"];
-    var CRName=cashierData["CRName"];
-    var cashierMsg="";
-    database.getTRecByStockId(stockID, function(err, res){
-        if(err){
-            callback(err);
-            return;
-        }
-        if(res.recordset && res.recordset.length>0){
-            cashierMsg='<b>Информация кассиру на '+moment(new Date()).format('HH:mm DD.MM.YYYY')+' </b> ';
-            cashierMsg+="\n<b>Касса:</b> "+ CRName +"\n<b>Склад:</b> "+StockName;
-            cashierMsg+="\n<b>Неподтвержденные приходные накладные:</b> ";
-            var unconfirmedRecArr=res.recordset;
-            for(var j in unconfirmedRecArr){
-                cashierMsg += "\n &#12539 № "+unconfirmedRecArr[j]["DocID"] +" от "+moment(unconfirmedRecArr[j]["DocDate"]).format("DD.MM.YYYY");
-            }
-            database.getTExcByStockId(stockID,function(err, res){
-                if(err){
-                    callback(err);
-                    return;
-                }
-                if(res.recordset && res.recordset.length>0) {
-                    cashierMsg += "\n<b>Неподтвержденные накладные перемещения:</b> ";
-                    var unconfirmedExcArr = res.recordset;
-                    for (var j in unconfirmedExcArr) {
-                        cashierMsg += "\n &#12539 № " + unconfirmedExcArr[j]["DocID"] + " от " + moment(unconfirmedExcArr[j]["DocDate"]).format("DD.MM.YYYY");
-                    }
-                    database.getTSestByStockId(stockID,function(err,res){
-                        if(err){
-                            callback(err);
-                            return;
-                        }
-                        if(res.recordset && res.recordset.length>0){
-                            cashierMsg += "\n<b>Переоценка цен продажи:</b> ";
-                            var priceChangedDocsArr=res.recordset;
-                            for (var e in priceChangedDocsArr) {
-                                cashierMsg += "\n &#12539 № " + priceChangedDocsArr[e]["DocID"] + " от " + moment(priceChangedDocsArr[e]["DocDate"]).format("DD.MM.YYYY");
-                                var chId=priceChangedDocsArr[e]["ChID"];
-                                sestSendChIDObj[chId]=true;
-                            }
-                        }
-                        callback(null,cashierMsg);
-                    });
-                    return;
-                }
-                database.getTSestByStockId(stockID,function(err,res){
-                    if(err){
-                        callback(err);
-                        return;
-                    }
-                    if(res.recordset && res.recordset.length>0){
-                        cashierMsg += "\n<b>Переоценка цен продажи:</b> ";
-                        var priceChangedDocsArr=res.recordset;
-                        for (var e in priceChangedDocsArr) {
-                            cashierMsg += "\n &#12539 № " + priceChangedDocsArr[e]["DocID"] + " от " + moment(priceChangedDocsArr[e]["DocDate"]).format("DD.MM.YYYY");
-                            var chId=priceChangedDocsArr[e]["ChID"];
-                            sestSendChIDObj[chId]=true;
-                        }
-                    }
-                    callback(null,cashierMsg);
-                });
-            })
-        }else{
-            database.getTExcByStockId(stockID,function(err, res){
-                if(err){
-                    callback(err);
-                    return;
-                }
-                if(res.recordset && res.recordset.length>0) {
-                    cashierMsg='<b>Информация кассиру на '+moment(new Date()).format('HH:mm DD.MM.YYYY')+' </b> ';
-                    cashierMsg+="\n<b>Касса:</b> "+ CRName +"\n<b>Склад:</b> "+StockName;
-                    cashierMsg+= "\n<b>Неподтвержденные накладные перемещения:</b> ";
-                    var unconfirmedExcArr = res.recordset;
-                    for (var j in unconfirmedExcArr) {
-                        cashierMsg += "\n &#12539 № " + unconfirmedExcArr[j]["DocID"] + " от " + moment(unconfirmedExcArr[j]["DocDate"]).format("DD.MM.YYYY");
-                    }
-                    database.getTSestByStockId(stockID,function(err,res){
-                        if(err){
-                            callback(err);
-                            return;
-                        }
-                        if(res.recordset && res.recordset.length>0){
-                            cashierMsg += "\n<b>Переоценка цен продажи:</b> ";
-                            var priceChangedDocsArr=res.recordset;
-                            for (var e in priceChangedDocsArr) {
-                                cashierMsg += "\n &#12539 № " + priceChangedDocsArr[e]["DocID"] + " от " + moment(priceChangedDocsArr[e]["DocDate"]).format("DD.MM.YYYY");
-                                var chId=priceChangedDocsArr[e]["ChID"];
-                                sestSendChIDObj[chId]=true;
-                            }
-                        }
-                        callback(null,cashierMsg);
-                    });
-                    return;
-                }
-                database.getTSestByStockId(stockID,function(err,res){
-                    if(err){
-                        callback(err);
-                        return;
-                    }
-                    if(res.recordset && res.recordset.length>0){
-                        cashierMsg='<b>Информация кассиру на '+moment(new Date()).format('HH:mm DD.MM.YYYY')+' </b> ';
-                        cashierMsg+="\n<b>Касса:</b> "+ CRName +"\n<b>Склад:</b> "+StockName;
-                        cashierMsg += "\n<b>Переоценка цен продажи:</b> ";
-                        var priceChangedDocsArr=res.recordset;
-                        for (var e in priceChangedDocsArr) {
-                            cashierMsg += "\n &#12539 № " + priceChangedDocsArr[e]["DocID"] + " от " + moment(priceChangedDocsArr[e]["DocDate"]).format("DD.MM.YYYY");
-                            var chId=priceChangedDocsArr[e]["ChID"];
-                            sestSendChIDObj[chId]=true;
-                        }
-                    }
-                    callback(null,cashierMsg);
-                });
-            });
-        }
-    });
-};
-
-var sestSendChIDObj={};
-
-module.exports.sendCashierMsgRecursively=function(index, cashierDataArr, scheduleCall, callback){
-    if(!cashierDataArr[index]){
-        if(callback)callback();
-        if(scheduleCall && Object.keys(sestSendChIDObj).length>0){
-
-             var chIDArr=[];
-            for(var i in sestSendChIDObj)chIDArr.push(i);
-          insertSEstMsgCountRecursively(0,chIDArr,function(){
-                sestSendChIDObj={};
-            });
-        }
-        return;
-    }
-    var cashierData=cashierDataArr[index];
-    var TChatID=cashierDataArr[index]["TChatID"];
-    module.exports.makeCashierMsg(cashierData, function(err, resMsg){
-        if(err){
-            logger.error("FAILED to create msg for cashier. Reason: "+err);
-            return;
-        }
-
-        if(resMsg) bot.sendMsgToChatId(TChatID, resMsg, {parse_mode:"HTML"});
-        module.exports.sendCashierMsgRecursively(index+1,cashierDataArr,scheduleCall,callback);
-    });
-};
-
-function insertSEstMsgCountRecursively(index,chIDArr,callback){
-    if(!chIDArr[index]){
-        callback();
-        return;
-    }
-    database.setSEstMsgCount(chIDArr[index], function(){
-        insertSEstMsgCountRecursively (index+1,chIDArr,callback);
-    });
-}
-module.exports.makeSalesAndReturnsMsg =function(callback){
-    var adminMsg='<b>Информация о суммах движения товара на '+moment(new Date()).format('HH:mm DD.MM.YYYY')+' </b> \n';
-   database.getSalesAndRetSum(function(err, res){
-       if(err) {
-           callback(err);
-           return;
-       }
-       var sumData=res;
-       if(sumData.length==0) {
-           adminMsg+="\n<b>Нет данных.</b>";
-           callback(null,adminMsg);
-       }else{
-           for (var i in sumData){
-               var dataItem=sumData[i];
-               adminMsg+="\n <b> "+dataItem.StockName+"</b>:   +"+dataItem.SaleSum +",   -"+dataItem.RetSum;
-           }
-           callback(null,adminMsg);
-       }
-   })
-};
 module.exports.sendAppStartMsgToSysadmins=function(appConfig, callback){                                     logger.info("sendAppStartMsgToSysadmins");
     var msgStr="<b>Telegram bot started.</b>";
     msgStr=msgStr+"<b>\ndbHost:</b>"+appConfig["dbHost"];
@@ -364,7 +148,7 @@ module.exports.sendAppStartMsgToSysadmins=function(appConfig, callback){        
     } else msgStr=msgStr+"<b>\ndailySalesRetSchedule</b> NOT SPECIFIED";
     if(appConfig["cashierSchedule"]){                                                                        logger.info("cashierSchedule=",appConfig["cashierSchedule"]);
         msgStr=msgStr+"<b>\ndCardClientsSchedule:</b>"+appConfig["dCardClientsSchedule"];
-        if(cron.validate(appConfig["dCardClientsSchedule"])==false){                                              logger.error("dCardClientsSchedule NOT VALID");
+        if(cron.validate(appConfig["dCardClientsSchedule"])==false){                                         logger.error("dCardClientsSchedule NOT VALID");
             msgStr=msgStr+" - NOT VALID";
         }else msgStr=msgStr+" - valid";
     } else msgStr=msgStr+"<b>\ndCardClientsSchedule</b> NOT SPECIFIED";
@@ -379,3 +163,23 @@ module.exports.sendAppStartMsgToSysadmins=function(appConfig, callback){        
     });
 };
 
+module.exports.makeAndSendDCardClientsMsg=function(){
+    database.getClientsForSendingMsg(function(err, chatIDDataArr){
+        if(err){
+            logger.error("FAILED to get clients chat id. Reason:"+err);
+            return;
+        }
+        sendMsgToClientsRecursively(0,chatIDDataArr);
+    })
+};
+
+function sendMsgToClientsRecursively(index, data){
+    if(!data[index]){
+        logger.info("All messages was sent successfully to clients!");
+        return;
+    }
+    bot.sendMsgToChatId(data[index].TChatID, "Дорогой клиент, рады сообщить, что Вы получили это сообщение!");
+    setTimeout(function(){
+        sendMsgToClientsRecursively(index+1, data)
+    },300);
+};
