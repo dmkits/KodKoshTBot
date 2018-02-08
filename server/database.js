@@ -5,6 +5,10 @@ var DbConnectionError=null;
 var configName=null;
 var logger=require('./logger')();
 
+
+var dbConfig;
+var dbConfigFilePath;
+
 module.exports.getDbConnectionError= function(callback){
    setImmediate(function(){
        callback(DbConnectionError);
@@ -45,10 +49,11 @@ module.exports.setAppConfig=function(configFileName){
 };
 
 module.exports.getAppConfig=function(){
-   var appConfig;
+   var appConfig={};
     try{
         appConfig=JSON.parse(fs.readFileSync(path.join(__dirname,"../"+configName+'.json')))
     }catch(e){
+        appConfig.error=e;
         logger.error("FAILED to get data from config file. Reason: "+ e);
     }
    return appConfig;
@@ -90,4 +95,12 @@ module.exports.getClientsForSendingMsg=function(callback){
             }
             callback(null,res.recordset);
         });
+};
+
+
+module.exports.loadConfig=function(){
+    var configFileName=process.argv[2] || "config";
+    dbConfigFilePath='./' + configFileName + '.cfg';
+    var stringConfig = fs.readFileSync(dbConfigFilePath);
+    dbConfig = JSON.parse(stringConfig);
 };

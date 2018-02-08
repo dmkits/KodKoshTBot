@@ -22,31 +22,49 @@
         </tr>
         <tr>
             <td height="1px">
-                <table width="500px">
-                    <tr>
-                        <td><label for="db.server">db.server </label></td>
-                        <td><input id="db.server" type="text" aria-disabled="false"/></td>
-                    </tr>
-                    <tr>
-                        <td><label for="db.port">db.port </label></td>
-                        <td><input id="db.port" type="text" aria-disabled="false"/></td>
-                    </tr>
-                    <tr>
-                        <td><label for="db.name">db.name </label></td>
-                        <td><input id="db.name" type="text" aria-disabled="false"/></td>
-                    </tr>
-                    <tr>
-                        <td><label for="db.user">db.user </label></td>
-                        <td><input id="db.user" type="text" aria-disabled="false"/></td>
-                    </tr>
-                    <tr>
-                        <td><label for="db.password">db.password </label></td>
-                        <td><input id="db.password" type="text" aria-disabled="false"/></td>
-                    </tr>
-                    <tr>
-                        <td><label for="reports.config">reports.config</label></td>
-                        <td><input id="reports.config" type="text" aria-disabled="false"/></td>
-                    </tr>
+                <table width="500px" id="startup_params_table">
+                    <!--<tr>-->
+                        <!--<td><label for="db.server">db.server </label></td>-->
+                        <!--<td><input id="db.server" type="text" aria-disabled="false"/></td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td><label for="db.port">db.port </label></td>-->
+                        <!--<td><input id="db.port" type="text" aria-disabled="false"/></td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td><label for="db.name">db.name </label></td>-->
+                        <!--<td><input id="db.name" type="text" aria-disabled="false"/></td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td><label for="db.user">db.user </label></td>-->
+                        <!--<td><input id="db.user" type="text" aria-disabled="false"/></td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td><label for="db.password">db.password </label></td>-->
+                        <!--<td><input id="db.password" type="text" aria-disabled="false"/></td>-->
+                    <!--</tr>-->
+
+                    <!---->
+                    <!--<tr>-->
+                        <!--<td><label for="reports.config">reports.config</label></td>-->
+                        <!--<td><input id="reports.config" type="text" aria-disabled="false"/></td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td><label for="reports.config">reports.config</label></td>-->
+                        <!--<td><input id="reports.config" type="text" aria-disabled="false"/></td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td><label for="reports.config">reports.config</label></td>-->
+                        <!--<td><input id="reports.config" type="text" aria-disabled="false"/></td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td><label for="reports.config">reports.config</label></td>-->
+                        <!--<td><input id="reports.config" type="text" aria-disabled="false"/></td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td><label for="reports.config">reports.config</label></td>-->
+                        <!--<td><input id="reports.config" type="text" aria-disabled="false"/></td>-->
+                    <!--</tr>-->
                 </table>
             </td>
         </tr>
@@ -66,16 +84,17 @@
 </div>
 </body>
 <script type="text/javascript">
-    require(["server/app", "dijit/layout/BorderContainer", "dijit/layout/LayoutContainer", "dijit/layout/ContentPane", "dojo/data/ItemFileReadStore",
+    require(["app", "dijit/layout/BorderContainer", "dijit/layout/LayoutContainer", "dijit/layout/ContentPane", "dojo/data/ItemFileReadStore",
                 "dijit/form/TextBox", "dijit/form/DateTextBox", "dijit/form/Button","request"],
             function (APP, BorderContainer, LayoutContainer, ContentPane, ItemFileReadStore, TextBox, DateTextBox, Button, Request) {
                 var sa_startup_params_PageContent = APP.instanceForID("sa_startup_params_PageContent", ContentPane, {});
-                var serverInput=new TextBox({id:"db.server"},"db.server");
-                var portInput=new TextBox({id:"db.port"},"db.port");
-                var databaseInput=new TextBox({id:"db.name"},"db.name");
-                var userInput=new TextBox({id:"db.user"},"db.user");
-                var dbPasswordInput=new TextBox({id:"db.password"},"db.password"); //reports.config
-                var reportsConfigInput=new TextBox({id:"reports.config"},"reports.config");
+                // var serverInput=new TextBox({id:"db.server"},"db.server");
+                // var portInput=new TextBox({id:"db.port"},"db.port");
+                // var databaseInput=new TextBox({id:"db.name"},"db.name");
+                // var userInput=new TextBox({id:"db.user"},"db.user");
+                // var dbPasswordInput=new TextBox({id:"db.password"},"db.password"); //reports.config
+                // var reportsConfigInput=new TextBox({id:"reports.config"},"reports.config");
+
                 var sa_startup_params_appLocalConfig = document.getElementById("sa_startup_params_appLocalConfig");
                 var reloadBtn = new Button({id: "SA_startup_params_BtnAppLocalConfigLoad"}, "SA_startup_params_BtnAppLocalConfigLoad");
                 var saveAndReconnectBtn = new Button({id: "SA_startup_params_BtnAppLocalConfigSaveAndReconnect"}, "SA_startup_params_BtnAppLocalConfigSaveAndReconnect");
@@ -113,13 +132,36 @@
                     );
                 };
                 function setDBConfigContent(configData) {
-                    serverInput.set("value",configData["server"]);
-                    if(configData["port"]) portInput.set("value",configData["port"]);
-                    else portInput.set("value","1433");
-                    databaseInput.set("value",configData["database"] );
-                    userInput.set("value",configData["user"]);
-                    dbPasswordInput.set("value",configData["password"]);
-                    if(configData["reports.config"])reportsConfigInput.set("value",configData["reports.config"]);
+                    // serverInput.set("value",configData["dbHost"]);
+                    // if(configData["port"]) portInput.set("value",configData["port"]);
+                    // else portInput.set("value","1433");
+                    // databaseInput.set("value",configData["database"] );
+                    // userInput.set("value",configData["dbUser"]);
+                    // dbPasswordInput.set("value",configData["dbPassword"]);
+                    // if(configData["reports.config"])reportsConfigInput.set("value",configData["reports.config"]);
+                   var configTable=document.getElementById("startup_params_table");
+                    for(var i in configData){
+                        var tr=document.createElement('tr');
+                        var  labelTd=document.createElement('td');
+                        labelTd.align='right';
+                        labelTd.paddingRight=10;                ///
+                        var label=document.createElement('label');
+                        var  inputTd=document.createElement('td');
+                        var input = document.createElement('input');
+                        input.setAttribute('id',i);
+                        label.htmlFor=i;
+                        label.innerText=i;
+                        var textBox=new TextBox(/*{id:i},i*/);
+                        configTable.appendChild(tr);
+                        tr.appendChild(labelTd);
+                        labelTd.appendChild(label);
+                        tr.appendChild(inputTd);
+                        inputTd.appendChild(input);
+                        input.value=configData[i];
+                        // textBox.set("value",configData[i]);
+                        // input.appendChild(textBox.domNode);
+                        // textBox.startup();
+                    }
                 }
 
                 saveAndReconnectBtn.onClick = function () {
