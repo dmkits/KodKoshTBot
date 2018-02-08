@@ -1,3 +1,7 @@
+var Promise = require('bluebird');
+Promise.config({
+    cancellation: true
+});
 var express = require('express');
 var app = express();
 var logger=require('./logger')();

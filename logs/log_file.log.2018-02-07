@@ -146,3 +146,23 @@
 {"level":"info","message":"New sysadmin registered successfully. Msg is sending.  Phone number: 380637868770","timestamp":"2018-02-07 17:44:42"}
 {"level":"info","message":"Sending msg to sysadmin. Chat ID: 491124507","timestamp":"2018-02-07 17:44:42"}
 {"level":"info","message":"Disk usage msg is sending for new sysadmin.  Phone number: 380637868770","timestamp":"2018-02-07 17:44:42"}
+{"level":"info","message":"sendAppStartMsgToSysadmins","timestamp":"2018-02-07 18:04:14"}
+{"level":"info","message":"sysadminsSchedule= */14 * * * * *","timestamp":"2018-02-07 18:04:14"}
+{"level":"info","message":"adminSchedule= */15 * * * * *","timestamp":"2018-02-07 18:04:14"}
+{"level":"info","message":"dailySalesRetSchedule= */15 * * * * *","timestamp":"2018-02-07 18:04:14"}
+{"level":"info","message":"startSendingSysAdminMsgBySchedule","timestamp":"2018-02-07 18:04:14"}
+{"level":"info","message":"Sending msg to sysadmin. Chat ID: 491124507","timestamp":"2018-02-07 18:04:14"}
+{"level":"info","message":"startSendingDCardClientsMsgBySchedule","timestamp":"2018-02-07 18:04:14"}
+{"level":"info","message":"Msg is sending to chat id:491124507. MSG: Дорогой клиент, рады сообщить, что Вы получили это сообщение!.","timestamp":"2018-02-07 18:04:20"}
+{"level":"info","message":"All messages was sent successfully to clients!","timestamp":"2018-02-07 18:04:20"}
+{"level":"info","message":"sendAppStartMsgToSysadmins","timestamp":"2018-02-07 18:04:51"}
+{"level":"info","message":"sysadminsSchedule= */14 * * * * *","timestamp":"2018-02-07 18:04:51"}
+{"level":"info","message":"adminSchedule= */15 * * * * *","timestamp":"2018-02-07 18:04:51"}
+{"level":"info","message":"dailySalesRetSchedule= */15 * * * * *","timestamp":"2018-02-07 18:04:51"}
+{"level":"info","message":"startSendingSysAdminMsgBySchedule","timestamp":"2018-02-07 18:04:51"}
+{"level":"info","message":"Sending msg to sysadmin. Chat ID: 491124507","timestamp":"2018-02-07 18:04:51"}
+{"level":"info","message":"startSendingDCardClientsMsgBySchedule","timestamp":"2018-02-07 18:04:51"}
+{"level":"info","message":"Sending msg to sysadmin. Chat ID: 491124507","timestamp":"2018-02-07 18:04:56"}
+{"level":"info","message":"Sending msg to sysadmin. Chat ID: 491124507","timestamp":"2018-02-07 18:05:00"}
+{"level":"info","message":"Msg is sending to chat id:491124507. MSG: Дорогой клиент, рады сообщить, что Вы получили это сообщение!.","timestamp":"2018-02-07 18:05:00"}
+{"level":"info","message":"All messages was sent successfully to clients!","timestamp":"2018-02-07 18:05:00"}

@@ -25,17 +25,17 @@ module.exports.connectToDB=function(callback){
         "database": appConfig.database
     }, function(err){
         if(err){
-            callback(err);
-            DbConnectionError=err;
-            logger.error("FAILED to connect to DB. Reason: "+err);
+            callback(err.message);
+            DbConnectionError=err.message;
+            logger.error("FAILED to connect to DB. Reason: "+DbConnectionError);
             return;
         }
         var request = new mssql.Request();
         request.query('select 1',
             function(err,res) {
                 if (err) {
-                    DbConnectionError = err;
-                    callback(err);
+                    DbConnectionError = err.message;
+                    callback(DbConnectionError);
                     return;
                 }
                 DbConnectionError=null;
@@ -47,6 +47,15 @@ module.exports.connectToDB=function(callback){
 module.exports.setAppConfig=function(configFileName){
     configName = configFileName;
 };
+
+module.exports.rewriteAppConfig=function(newAppConfig,callback){
+   // configName = configFileName;
+    fs.writeFile(path.join(__dirname,"../"+configName+'.json'), JSON.stringify(newAppConfig),
+        function (err, success) {
+        callback(err,success);
+    })
+};
+
 
 module.exports.getAppConfig=function(){
    var appConfig={};
@@ -99,8 +108,20 @@ module.exports.getClientsForSendingMsg=function(callback){
 
 
 module.exports.loadConfig=function(){
-    var configFileName=process.argv[2] || "config";
-    dbConfigFilePath='./' + configFileName + '.cfg';
+    // var configFileName=process.argv[2] || "config";
+    dbConfigFilePath=path.join(__dirname,'../' + configName + '.cfg');
     var stringConfig = fs.readFileSync(dbConfigFilePath);
     dbConfig = JSON.parse(stringConfig);
+};
+
+module.exports.executeQuery=function(queryText,callback){
+    var request = new mssql.Request();
+    request.query(queryText,
+        function(err,res){
+            if(err){
+                callback(err);
+                return;
+            }
+            callback(null, res);
+        });
 };

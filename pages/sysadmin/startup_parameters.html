@@ -22,50 +22,8 @@
         </tr>
         <tr>
             <td height="1px">
-                <table width="500px" id="startup_params_table">
-                    <!--<tr>-->
-                        <!--<td><label for="db.server">db.server </label></td>-->
-                        <!--<td><input id="db.server" type="text" aria-disabled="false"/></td>-->
-                    <!--</tr>-->
-                    <!--<tr>-->
-                        <!--<td><label for="db.port">db.port </label></td>-->
-                        <!--<td><input id="db.port" type="text" aria-disabled="false"/></td>-->
-                    <!--</tr>-->
-                    <!--<tr>-->
-                        <!--<td><label for="db.name">db.name </label></td>-->
-                        <!--<td><input id="db.name" type="text" aria-disabled="false"/></td>-->
-                    <!--</tr>-->
-                    <!--<tr>-->
-                        <!--<td><label for="db.user">db.user </label></td>-->
-                        <!--<td><input id="db.user" type="text" aria-disabled="false"/></td>-->
-                    <!--</tr>-->
-                    <!--<tr>-->
-                        <!--<td><label for="db.password">db.password </label></td>-->
-                        <!--<td><input id="db.password" type="text" aria-disabled="false"/></td>-->
-                    <!--</tr>-->
+                <div id="startup_params_div"></div>
 
-                    <!---->
-                    <!--<tr>-->
-                        <!--<td><label for="reports.config">reports.config</label></td>-->
-                        <!--<td><input id="reports.config" type="text" aria-disabled="false"/></td>-->
-                    <!--</tr>-->
-                    <!--<tr>-->
-                        <!--<td><label for="reports.config">reports.config</label></td>-->
-                        <!--<td><input id="reports.config" type="text" aria-disabled="false"/></td>-->
-                    <!--</tr>-->
-                    <!--<tr>-->
-                        <!--<td><label for="reports.config">reports.config</label></td>-->
-                        <!--<td><input id="reports.config" type="text" aria-disabled="false"/></td>-->
-                    <!--</tr>-->
-                    <!--<tr>-->
-                        <!--<td><label for="reports.config">reports.config</label></td>-->
-                        <!--<td><input id="reports.config" type="text" aria-disabled="false"/></td>-->
-                    <!--</tr>-->
-                    <!--<tr>-->
-                        <!--<td><label for="reports.config">reports.config</label></td>-->
-                        <!--<td><input id="reports.config" type="text" aria-disabled="false"/></td>-->
-                    <!--</tr>-->
-                </table>
             </td>
         </tr>
         <tr>
@@ -88,13 +46,6 @@
                 "dijit/form/TextBox", "dijit/form/DateTextBox", "dijit/form/Button","request"],
             function (APP, BorderContainer, LayoutContainer, ContentPane, ItemFileReadStore, TextBox, DateTextBox, Button, Request) {
                 var sa_startup_params_PageContent = APP.instanceForID("sa_startup_params_PageContent", ContentPane, {});
-                // var serverInput=new TextBox({id:"db.server"},"db.server");
-                // var portInput=new TextBox({id:"db.port"},"db.port");
-                // var databaseInput=new TextBox({id:"db.name"},"db.name");
-                // var userInput=new TextBox({id:"db.user"},"db.user");
-                // var dbPasswordInput=new TextBox({id:"db.password"},"db.password"); //reports.config
-                // var reportsConfigInput=new TextBox({id:"reports.config"},"reports.config");
-
                 var sa_startup_params_appLocalConfig = document.getElementById("sa_startup_params_appLocalConfig");
                 var reloadBtn = new Button({id: "SA_startup_params_BtnAppLocalConfigLoad"}, "SA_startup_params_BtnAppLocalConfigLoad");
                 var saveAndReconnectBtn = new Button({id: "SA_startup_params_BtnAppLocalConfigSaveAndReconnect"}, "SA_startup_params_BtnAppLocalConfigSaveAndReconnect");
@@ -132,52 +83,62 @@
                     );
                 };
                 function setDBConfigContent(configData) {
-                    // serverInput.set("value",configData["dbHost"]);
-                    // if(configData["port"]) portInput.set("value",configData["port"]);
-                    // else portInput.set("value","1433");
-                    // databaseInput.set("value",configData["database"] );
-                    // userInput.set("value",configData["dbUser"]);
-                    // dbPasswordInput.set("value",configData["dbPassword"]);
-                    // if(configData["reports.config"])reportsConfigInput.set("value",configData["reports.config"]);
-                   var configTable=document.getElementById("startup_params_table");
+                    var configTable=document.getElementById('startup_params_table');
+                    if(configTable)
+                    {
+                        configTable.parentNode.removeChild(configTable);
+                    }
+                    configTable=document.createElement("table");
+                    configTable.setAttribute('id',"startup_params_table");
+                    var startupParamsDiv=document.getElementById('startup_params_div');
+                    startupParamsDiv.appendChild(configTable);
                     for(var i in configData){
                         var tr=document.createElement('tr');
                         var  labelTd=document.createElement('td');
                         labelTd.align='right';
-                        labelTd.paddingRight=10;                ///
+                        labelTd.style.paddingRight='10px';
                         var label=document.createElement('label');
                         var  inputTd=document.createElement('td');
+                        inputTd.width="400px";
                         var input = document.createElement('input');
                         input.setAttribute('id',i);
+                        input.size=60;
                         label.htmlFor=i;
                         label.innerText=i;
-                        var textBox=new TextBox(/*{id:i},i*/);
                         configTable.appendChild(tr);
                         tr.appendChild(labelTd);
                         labelTd.appendChild(label);
                         tr.appendChild(inputTd);
                         inputTd.appendChild(input);
                         input.value=configData[i];
-                        // textBox.set("value",configData[i]);
-                        // input.appendChild(textBox.domNode);
-                        // textBox.startup();
                     }
                 }
-
                 saveAndReconnectBtn.onClick = function () {
                     var sa_startup_params_appLocalConfig = document.getElementById("sa_startup_params_appLocalConfig");
                     sa_startup_params_appLocalConfig.innerHTML = "<div><b>Configuration saving and reconnected to database...</b></div>";
-                    var newDBConfig={
-                        "server": serverInput.get('value'),
-                        "port": portInput.get('value'),
-                        "database": databaseInput.get('value'),
-                        "user": userInput.get('value'),
-                        "password": dbPasswordInput.get('value'),
-                        "reports.config":reportsConfigInput.get('value')
-                    };
 
-                    Request.postJSONData({url:  "/sysadmin/startup_parameters/store_app_config_and_reconnect", data: newDBConfig, consoleLog: true},
-                        function (data) {
+
+                    var newAppConfig={};
+                    var newDBConfigData=document.getElementById('startup_params_table'); ///////////////////
+                    var childrenArr=newDBConfigData.childNodes;
+                    for(var i in childrenArr){
+                        if(childrenArr[i]){
+                            if(childrenArr[i].nodeName=="TR"){
+                               var trDataArr= childrenArr[i].childNodes;
+                               for(var k in trDataArr){
+                                   if(trDataArr[k].nodeName=="TD"){
+                                  //  console.log("trDataArr[k].childNodes=",trDataArr[k].childNodes);   //trDataArr[k].childNodes
+                                       if(trDataArr[k].childNodes[0].nodeName=="INPUT"){
+                                           var input=trDataArr[k].childNodes[0];
+                                           newAppConfig[input.id]=input.value;
+                                       }
+                                   }
+                               }
+                            }
+                        }
+                    }
+                    Request.postJSONData({url:  "/sysadmin/startup_parameters/store_app_config_and_reconnect", data: newAppConfig, consoleLog: true},
+                        function (data) { console.log("data 152=",data);
                             if (!data) {
                                 sa_startup_params_appLocalConfig.innerHTML = "<div><b style='color:red'>No connection!</b></div>";
                                 return;
@@ -194,10 +155,9 @@
                                 sa_startup_params_appLocalConfig.innerHTML =
                                     sa_startup_params_appLocalConfig.innerHTML+ "<br><div><b>Reconnected to database.</b></div>";
                             }
-                            if (sa_startup_params_PageContent.getParent().updateDBState)  sa_startup_params_PageContent.getParent().updateDBState();
+                           if (sa_startup_params_PageContent.getParent().updateDBState)  sa_startup_params_PageContent.getParent().updateDBState();
                         });
                 };
-                /*---initing on load---*/
                 sa_startup_params_PageContent.getAppConfiguration();
             });
 </script>

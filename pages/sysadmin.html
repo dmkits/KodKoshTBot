@@ -5,12 +5,23 @@
     <!--[if IE]>
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7">
     <![endif]-->
+    <!--<script src="/jslib/moment/moment-with-locales.js"></script>-->
+    <!--<link rel="icon" type="image/gif" href="/icons/profits16x16.ico"/>-->
+    <!--<link rel="stylesheet" href="/jslib/dijit/themes/claro/claro.css" media="screen">-->
+    <!--<script type="text/javascript" src="/jslib/dojo/dojo.js" data-dojo-config="async:true,parseOnLoad:false"></script>-->
+    <!--<link rel="stylesheet" type="text/css" href="/css/sysadmin.css" media="screen">-->
+
+    <script src="/jslib/handsontable/handsontable.full.min.js"></script>
+    <link rel="stylesheet" media="screen" href="/jslib/handsontable/handsontable.full.min.css">
+    <script src="/jslib/handsontable/numbro/languages/ru-RU.min.js"></script>
+    <script src="/jslib/numeral/languages/ru.js"></script>
     <script src="/jslib/moment/moment-with-locales.js"></script>
-    <link rel="icon" type="image/gif" href="/icons/profits16x16.ico"/>
     <link rel="stylesheet" href="/jslib/dijit/themes/claro/claro.css" media="screen">
     <script type="text/javascript" src="/jslib/dojo/dojo.js" data-dojo-config="async:true,parseOnLoad:false"></script>
+    <link rel="stylesheet" href="/jslib/htable.css" media="screen">
     <link rel="stylesheet" type="text/css" href="/css/sysadmin.css" media="screen">
-    <title>REPORTS</title>
+
+    <title>BOT</title>
 </head>
 <body class="claro">
 <div id="sysadmin_MainContainer">
@@ -26,7 +37,7 @@
         </div>
         <div id="sysadmin_TopActions">
             <button id="display_startup_params">Startup params</button>
-            <button id="display_reports_config">Reports config</button>
+            <button id="display_DCards">DCards</button>
         </div>
     </div>
     <div id="sysadmin_ContentContainer"></div>
@@ -60,7 +71,7 @@
                 });
 
                 var startupBtn = new Button({id:"display_startup_params"},"display_startup_params");
-                var sqlBtn = new Button({id:"display_reports_config"},"display_reports_config");
+                var sqlBtn = new Button({id:"display_DCards"},"display_DCards");
 
                 var sysadmin_ContentContainer = APP.instanceForID("sysadmin_ContentContainer",
                         StackContainer, {region: "center", tabPosition: "top", class: "sysadmin_Content"});
@@ -130,7 +141,7 @@
                    sysadmin_MainContainer.runSysadminContentPage("startup_parameters", "Startup parameters", false, "/sysadmin/startup_parameters");
                 };
                 sqlBtn.onClick=function(){
-                    sysadmin_MainContainer.runSysadminContentPage("reports_config", "Reports config", false, "/sysadmin/reports_config");
+                    sysadmin_MainContainer.runSysadminContentPage("getDCards", "DCards", false, "/sysadmin/getDCards");
                 };
                 sysadmin_MainContainer.getAppState();
             });
