@@ -9,6 +9,9 @@ var configFileNameParam=process.argv[2] || "config";
 var database = require('./database');
 database.setAppConfig(configFileNameParam);
 var appConfig=database.getAppConfig();
+database.connectToDB(function(err, res){
+
+});
 var appPort=appConfig["appPort"]||80;
 
 // require('./bot_index.js');
@@ -31,7 +34,8 @@ process.on('uncaughtException', function(err) {
     console.log('Server process failed! Reason:', err);
 });
 
-
 require('./sysadmin')(app);
+require('./mainPage')(app);
+
 
 app.listen(appPort);
