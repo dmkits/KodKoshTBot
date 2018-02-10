@@ -5,28 +5,28 @@
     <title></title>
 </head>
 <body>
-<div id="DCards_PageContainer" style="width: 100%; height: 100%;">
-    <div id="DCards_ContentContainer" style="width:100%;height:100%; margin:0;padding:0;"></div>
+<div id="botMsg_PageContainer" style="width: 100%; height: 100%;">
+    <div id="botMsg_ContentContainer" style="width:100%;height:100%; margin:0;padding:0;"></div>
 </div>
 </body>
 <script type="text/javascript">
     require(["app", "dijit/layout/BorderContainer", "dijit/layout/StackContainer", "tDocumentSimpleTableEditable"],
         function (APP, BorderContainer, StackContainer, TDocumentSimpleTableEditable) {
-            var DCards_PageContainer=
-                APP.instanceForID("DCards_PageContainer", BorderContainer, {});
-            var DCards_ContentContainer=
-                APP.instanceForID("DCards_ContentContainer", StackContainer, {region:'center'});
+            var botMsg_PageContainer=
+                APP.instanceForID("botMsg_PageContainer", BorderContainer, {});
+            var botMsg_ContentContainer=
+                APP.instanceForID("botMsg_ContentContainer", StackContainer, {region:'center'});
 
-            DCards_ContentContainer.document =
-                APP.childFor(DCards_ContentContainer, "TableClientDCards",
-                    TDocumentSimpleTableEditable, {titleText:"Дисконтные карты", rightPane:{width:150},
+            botMsg_ContentContainer.document =
+                APP.childFor(botMsg_ContentContainer, "TableBotMsg",
+                    TDocumentSimpleTableEditable, {titleText:"Рассылка", rightPane:{width:150},
                         rightToolPane:{title:"Действия",
-                            buttons:{/*insertTableRow:"Добавить",*/ allowEditTableSelectedRow:"Изменить",
+                            buttons:{insertTableRow:"Добавить", allowEditTableSelectedRow:"Изменить",
                                 storeTableSelectedRow:"Сохранить"/*,deleteTableSelectedRow:"Удалить"*/}},
-                        dataURL:"/DCards/getDataForTable",
-                       //dataNewURL:"/DCards/newDataForDCardsTable",
-                        dataStoreURL:"/DCards/storeDCardsTableData",
-                       // dataDeleteURL:"/dir/contractors/deleteDirContractorsTableData"
+                        dataURL:"/botMsg/getDataForTable",
+                        dataNewURL:"/botMsg/newDataForBotMsgTable",
+                        dataStoreURL:"/botMsg/storeBotMsgTableData",
+                       // dataDeleteURL:"/botMsg/contractors/deleteDirContractorsTableData"
                 })
                     // .addCheckBtnCondition("Поставщики",{width:90,contentTableConditions:{"IS_SUPPLIER~":"1"}})
                     // .addCheckBtnCondition("Покупатели",{width:85,contentTableConditions:{"IS_BUYER~":"1"}})
@@ -40,7 +40,7 @@
                         nextCallback();
                     })
                     .startUp();
-            DCards_PageContainer.layout();
+            botMsg_PageContainer.layout();
         })
 </script>
 </html>
