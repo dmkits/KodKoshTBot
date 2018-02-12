@@ -23,10 +23,10 @@
                         rightToolPane:{title:"Действия",
                             buttons:{/*insertTableRow:"Добавить",*/ allowEditTableSelectedRow:"Изменить",
                                 storeTableSelectedRow:"Сохранить"/*,deleteTableSelectedRow:"Удалить"*/}},
-                        dataURL:"/DCards/getDataForTable",
-                       //dataNewURL:"/DCards/newDataForDCardsTable",
-                        dataStoreURL:"/DCards/storeDCardsTableData",
-                       // dataDeleteURL:"/dir/contractors/deleteDirContractorsTableData"
+                        dataURL:"/clientsDCards/getDataForTable", dataURLCondition:{"ChID>":0},
+                       //dataNewURL:"/clientsDCards/newDataForDCardsTable",
+                        dataStoreURL:"/clientsDCards/storeDCardsTableData",
+                        //dataDeleteURL:"/clientsDCards/deleteTableDataItem"
                 })
                     // .addCheckBtnCondition("Поставщики",{width:90,contentTableConditions:{"IS_SUPPLIER~":"1"}})
                     // .addCheckBtnCondition("Покупатели",{width:85,contentTableConditions:{"IS_BUYER~":"1"}})
