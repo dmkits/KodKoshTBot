@@ -1,43 +1,42 @@
-var mssql=require('mssql');
-var dbConnectionError=null;
 var logger=require('./logger')() ;
 var appConfig=require('./appConfig');
 
-module.exports.getDbConnectionError= function(callback){
-   setImmediate(function(){
-       callback(dbConnectionError);
-   });
+var mssql=require('mssql');
+var dbConnectionError=null;
+
+module.exports.getDbConnectionError= function(){
+   return dbConnectionError;
 };
+// module.exports.getDbConnectionError= function(callback){
+//     setImmediate(function(){
+//         callback(dbConnectionError);
+//     });
+// };
 
 module.exports.connectToDB=function(callback){
-    var callback1=callback;
     mssql.close();
     mssql.connect({
         "user": appConfig.getAppConfigParam('dbUser'),
         "password": appConfig.getAppConfigParam('dbPassword'),
         "server": appConfig.getAppConfigParam('dbHost'),
         "database": appConfig.getAppConfigParam('database')
-    }, function(err){   console.log("connectToDB err=",err);
-        callback1();         console.log("connectToDB request.query callback");
+    }, function(err){
         if(err){
-            callback1(err.message);
             dbConnectionError=err.message;
             logger.error("FAILED to connect to DB. Reason: "+dbConnectionError);
+            callback(err.message);
             return;
         }
-
-        var request = new mssql.Request();  console.log("connectToDB request");
-        return;
-
+        var request = new mssql.Request();
         request.query('select 1',
-            function(err,res) {             console.log("connectToDB request.query err=",err);
+            function(err,res) {
                 if (err) {
                     dbConnectionError = err.message;
-                    callback1(dbConnectionError);
+                    callback(dbConnectionError);
                     return;
                 }
                 dbConnectionError=null;
-                callback1();         console.log("connectToDB request.query callback");
+                callback();
             });
     });
 };

@@ -1,6 +1,6 @@
 var path=require ('path');
 var database=require('./database');
-var appConfigModule=require('./appConfig');
+var appConfig=require('./appConfig');
 
 module.exports= function(app) {
 
@@ -9,16 +9,13 @@ module.exports= function(app) {
     });
     app.get("/sysadmin/app_state", function(req, res){
         var outData= {};
-        var appConfig=appConfigModule.loadAppConfig();
-        if (appConfig.error) {
-            outData.error= appConfig.error;
-            res.send(outData);
-            return;
-        }
+
         outData.mode= process.argv[2] || "config";
-        outData.port=appConfig.appPort;
-        outData.connUserName=appConfig.dbUser;
-        outData.configuration= appConfig;
+
+        outData.port=appConfig.getAppConfigParam("appPort");
+        outData.connUserName=appConfig.getAppConfigParam("dbUser");
+        outData.configuration= appConfig.getAppConfigParams();
+
         database.connectToDB(function(DBConnectError){
             if (DBConnectError)
                 outData.dbConnection= DBConnectError;
@@ -27,18 +24,16 @@ module.exports= function(app) {
             res.send(outData);
         });
     });
+
     app.get("/sysadmin/startup_parameters", function (req, res) {
         res.sendFile(path.join(__dirname, '../pages/sysadmin', 'startup_parameters.html'));
     });
+
     app.get("/sysadmin/startup_parameters/get_app_config", function (req, res) {
-        var appConfig=appConfigModule.loadAppConfig();
-        if(appConfig.error){
-            res.send({error:appConfig.error});
-            return;
-        }
+        var appConfigParams=appConfig.getAppConfigParams();
         var outData={};
-        for(var i in appConfig){
-            var param=appConfig[i];
+        for(var i in appConfigParams){
+            var param=appConfigParams[i];
             if(typeof param=='object' && !Array.isArray(param)){
                 var innerObjKeysArr=Object.keys(param);
                 for(var k in innerObjKeysArr){
@@ -49,10 +44,14 @@ module.exports= function(app) {
         res.send(outData);
     });
     app.get("/sysadmin/startup_parameters/load_app_config", function (req, res) {
-        var appConfig=appConfigModule.loadAppConfig();
-        if(appConfig.error){
-            res.send({error:appConfig.error});
+        try{
+            var appConfigParams=appConfig.loadAppConfig();
+        }catch(e){
+            res.send({error:"Failed load App Config! Reason: "+e.message});
             return;
+        }
+
+        if(appConfigParams.error){
         }
         var outData={};
         for(var i in appConfig){
@@ -78,7 +77,7 @@ module.exports= function(app) {
                 newRefactoredAppConfig[propName][innerPropName]=receivedAppConfig[i];
             }else  newRefactoredAppConfig[i]=receivedAppConfig[i];
         }
-        appConfigModule.rewriteAppConfig(newRefactoredAppConfig,function(err){
+        appConfig.rewriteAppConfig(newRefactoredAppConfig,function(err){
             if(err){
                 outData.error=err;
                 res.send(outData);

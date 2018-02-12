@@ -1,19 +1,16 @@
 {
-  "dbHost":"",
-  "dbPort":"",
-  "database":"",
-  "dbUser":"",
-  "dbPassword":"",
-  "appPort":"8080",
-  "botToken":"525453016:AAGDfQLPR5fOeU02_6VsQEyPdkQHnJJa6Qk",
-  "sysadmins":[],
-  "sysadminsSchedule":"",
-  "adminSchedule":"",
-  "dailySalesRetSchedule":"",
-  "dailySalesRetUsers":[],
-  "dCardClientsSchedule":"",
+  "dbHost":"192.168.56.11",
+  "dbPort":"1433",
+  "database":"GMSSample38rkk",
+  "dbUser":"sa",
+  "dbPassword":"GMSgms123",
+  "appPort":"8081",
+  "botToken":"484983379:AAHj07C0ydygUo81Jo9kNzqOeeK2J5bD3oY",
+  "sysadmins":"380675612300",
+  "sysadminsSchedule":"0 0 0,6-23/3 * * *",
   "sysadminsMsgConfig":{
     "system":"C:","backup":"C:/GMSServer/BackUp/",
     "dbBackupFileName":"GMSData38_*.rar"
-  }
+  },
+  "dCardClientsSchedule":"0 5 9-22/1 * * *"
 }

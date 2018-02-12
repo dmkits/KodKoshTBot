@@ -3,13 +3,10 @@
   "database":"GMSSample38rkk",
   "dbUser":"sa",
   "dbPassword":"GMSgms123",
-  "appPort":"8081",
+  "appPort":"8181",
   "botToken":"484983379:AAHj07C0ydygUo81Jo9kNzqOeeK2J5bD3oY",
-  "sysadmins":"38067561230,380637868770",
-  "sysadminsSchedule":"*/14 * * * * *",
-  "adminSchedule":"*/15 * * * * *",
-  "dailySalesRetSchedule":"*/15 * * * * *",
-  "dailySalesRetUsers":"380675612300,380637868770",
-  "dCardClientsSchedule":"*/20 * * * * *",
-  "sysadminsMsgConfig":{"system":"/","backup":"/home/ianagez/IdeaProjects/GabisUA/backup/","dbBackupFileName":"GMSData38_*.rar"}
+  "sysadmins":"380675612300,380637868770,380981175096",
+  "sysadminsSchedule":"0 */1 * * * *",
+  "sysadminsMsgConfig":{"system":"/","backup":"/home/ianagez/IdeaProjects/GabisUA/backup/","dbBackupFileName":"GMSData38_*.rar"},
+  "dCardClientsSchedule":"*/20 * * * * *"
 }

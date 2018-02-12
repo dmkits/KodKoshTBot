@@ -1,5 +1,5 @@
 var logger=require('./logger')();
-var appConfig=require('./appConfig')
+var appConfig=require('./appConfig');
 
 var Promise = require('bluebird');
 Promise.config({
@@ -9,31 +9,26 @@ var TelegramBot = require('node-telegram-bot-api');
 var TOKEN=appConfig.getAppConfigParam('botToken');
 var bot = new TelegramBot(TOKEN, {polling: true});
 
-var fs=require('fs'), path = require('path');
-var database=require('./database');
-
 module.exports.sendMessage= function(chatId, text, form){
     bot.sendMessage(chatId, text, form).catch((error)=>{
         logger.warn("Failed to send msg to user. Chat ID:"+ chatId +" Reason: ",error.response.body);
     });
 };
 
-// var msgManager=require('./msgManager');
-
-// var sysAdminTelArr=configObj["sysadmins"];
+var database=require('./database');
 var telBotSysadmins= require('./telBotSysadmins');
 var telBotClientsDCards= require('./telBotClientsDCards');
 
-var KB={
+var kbActions={
     registration:'Зарегистироваться',
-    dbConnection:'Подключиться к БД'
+    connectToDB:'Подключиться к БД'
 };
 bot.onText(/\/start/, function(msg, resp) {
     logger.info("New chat started. Greeting msg is sending. Chat ID: "+msg.chat.id);
     bot.sendMessage(msg.chat.id, "Здравствуйте! \n Пожалуйста, зарегистрируйтесь для получения сообщений.", {
         reply_markup: {
             keyboard: [
-                [{text:KB.registration , "request_contact": true}]
+                [{text:kbActions.registration , "request_contact": true}]
             ],
             one_time_keyboard: true
         }
@@ -43,16 +38,6 @@ bot.onText(/\/start/, function(msg, resp) {
 });
 
 bot.on('message',(msg)=>{
-    if(msg.text==KB.dbConnection){
-        database.connectToDB(function(err){
-            if (err){
-                module.exports.sendMsgToAdmins("Не удалось подключиться к БД! Причина:"+err);
-                return;
-            }
-             module.exports.sendMsgToAdmins("Подключение к БД установлено успешно!");
-        })
-    }
-
     if(msg.contact && msg.contact.phone_number){
         var phoneNumber=msg.contact.phone_number;
         if(phoneNumber[0]=="+")phoneNumber=phoneNumber.substring(1);
@@ -64,16 +49,22 @@ bot.on('message',(msg)=>{
             //     });
             // }
         });
-        telBotClientsDCards.checkAndRegisterClientsDCards(phoneNumber);
+        telBotClientsDCards.checkAndRegisterClientsDCards(msg,phoneNumber);
+    }
+    if(msg.text==kbActions.connectToDB){
+        database.connectToDB(function(err){
+            if (err){
+                telBotSysadmins.sendMsgToSysadmins("Не удалось подключиться к БД! Причина:"+err,kbActions);
+                return;
+            }
+            telBotSysadmins.sendMsgToSysadmins("Подключение к БД установлено успешно!",kbActions);
+        })
     }
 });
-// module.exports.sendMsgToChatId=function(chatId, msg, params){
-//     if(!params)params={};
-//     logger.info("Msg is sending to chat id:"+chatId+". MSG: "+msg+".");
-//     bot.sendMessage(chatId,msg, params).catch((error)=>{
-//         logger.warn("Failed to send msg to user. Chat ID:"+ chatId+" Reason: ",error.response.body);
-//     });
-// };
+
+module.exports.sendStartMsg=function(){
+    telBotSysadmins.sendAppStartMsgToSysadmins(kbActions);
+};
 
 bot.on('error', (error) => {
     logger.error("Bot ERROR=",error);
@@ -81,5 +72,3 @@ bot.on('error', (error) => {
 bot.on('polling_error', (error) => {
     logger.error(error);
 });
-
-telBotSysadmins.sendAppStartMsgToSysadmins();

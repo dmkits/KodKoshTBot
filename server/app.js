@@ -21,22 +21,18 @@ try {
     return;
 }
 
-var configFileName=process.argv[2] || "config";
+
 try {
     var appConfig=require ('./appConfig');
+    var configFileName=process.argv[2] || "config";
+    appConfig.setAppConfigName(configFileName);
+    appConfig.loadAppConfig();
 } catch (e){
-    console.log("FAILED TO LOAD appConfig! APP START IMPOSSIBLE!");
-    logger.error("FAILED TO LOAD appConfig! APP START IMPOSSIBLE!");
+    console.log("FAILED TO LOAD appConfig! APP START IMPOSSIBLE! REASON:",e.message);
+    logger.error("FAILED TO LOAD appConfig! APP START IMPOSSIBLE! REASON:",e.message);
     return;
 }
-appConfig.setAppConfigName(configFileName);
-var appPort=null;
-try{
-    appConfig.loadAppConfig();
-    appPort= appConfig.getAppConfigParam("appPort") || 80;
-}catch(e){
-    appPort= 80;
-}
+var appPort= appConfig.getAppConfigParam("appPort") || 80;;
 
 process.on('uncaughtException', function(err) {
     logger.error('Server process failed! Reason:', err);
@@ -51,7 +47,7 @@ try{
     var db=require('./database');
     require('./sysadmin')(app);
     require('./mainPage')(app);
-    require('./telBot');
+    var telBot= require('./telBot');
 } catch (e){
     console.log("FAILED TO LOAD APP MODULES! APP START IMPOSSIBLE! REASON:",e.message);
     logger.error("FAILED TO LOAD APP MODULES! APP START IMPOSSIBLE! REASON:",e.message);
@@ -61,6 +57,8 @@ try{
 db.connectToDB(function(){
     app.listen(appPort,function(err){
         if(err) logger.error("FAILED TO START APP! REASON:",err.message);
-        logger.info("APP STARTED ON PORT ",appPort);
+        else logger.info("APP STARTED ON PORT ",appPort);
     });
+    telBot.sendStartMsg();
 });
+

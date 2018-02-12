@@ -1,40 +1,31 @@
 var logger=require('./logger')();
 
-var appConfig=require('./appConfig');
-var bot=require('./telBot.js');
-var database = require('./database');
+var appConfig=require('./appConfig'),
+    bot=require('./telBot.js'),
+    database = require('./database');
 
 var fs = require('fs'), path = require('path'), moment = require('moment');
-var diskusage = require('diskusage-ng');
 var cron = require('node-cron');
+var diskusage = require('diskusage-ng');
 
-var sysAdminSchedule=appConfig.getAppConfigParam('sysadminsSchedule');
-
-var sysadminsMsgConfig = appConfig.getAppConfigParam('sysadminsMsgConfig');
-
-
-module.exports.checkAndRegisterSysAdmin=function (msg,phoneNumber, callback){   
-    
-    var sysAdminTelArr=appConfig.getAppConfigParam('sysadmins');
-    if(! sysAdminTelArr ||sysAdminTelArr.length==0) return;
-    var registeredSysAdmins;
+module.exports.checkAndRegisterSysAdmin=function (msg,phoneNumber, callback){
+    var configSysadmins=appConfig.getAppConfigParam('sysadmins');
+    if(!configSysadmins||configSysadmins.length==0) return;
     try{
-        registeredSysAdmins=JSON.parse(fs.readFileSync(path.join(__dirname,"../sysadmins.json")));
+        var registeredSysadmins=JSON.parse(fs.readFileSync(path.join(__dirname,"../sysadmins.json")));
     }catch(e){
         if (e.code == "ENOENT") {
-            registeredSysAdmins =[];
+            registeredSysadmins =[];
         }else{
             logger.error("FAILED to get registeredSysAdmins list. Reason:"+e);
             return;
         }
     }
-    for(var i=0; i<sysAdminTelArr.length; i++){
-        var adminTelNum = sysAdminTelArr[i];
-        if(adminTelNum!=phoneNumber) continue;
-        var newSysAdmin={};
-        newSysAdmin[adminTelNum]=msg.chat.id;
-        registeredSysAdmins.push(newSysAdmin);
-        fs.writeFile(path.join(__dirname, "../sysadmins.json"),JSON.stringify(registeredSysAdmins), {flag:'w+'},
+    for(var i=0; i<configSysadmins.length; i++){
+        var configSysadminTelNum = configSysadmins[i];
+        if(configSysadminTelNum!=phoneNumber) continue;
+        registeredSysadmins[phoneNumber]=msg.chat.id;
+        fs.writeFile(path.join(__dirname, "../sysadmins.json"),JSON.stringify(registeredSysadmins), {flag:'w+'},
             function(err){
                 if (err) {
                     logger.error("FAILED to register sysadmin. Reason: "+err);
@@ -57,104 +48,89 @@ module.exports.checkAndRegisterSysAdmin=function (msg,phoneNumber, callback){
     }
 };
 
-module.exports.sendAppStartMsgToSysadmins=function(){                                                        logger.info("sendAppStartMsgToSysadmins");
+module.exports.sendAppStartMsgToSysadmins=function(kbActions){                                               logger.info("sendAppStartMsgToSysadmins");
     var msgStr="<b>Telegram bot started.</b>";
     msgStr=msgStr+"<b>\ndbHost:</b>"+appConfig.getAppConfigParam("dbHost");
     msgStr=msgStr+"<b>\ndbPort:</b>"+appConfig.getAppConfigParam("dbPort");
     msgStr=msgStr+"<b>\ndatabase:</b>"+appConfig.getAppConfigParam("database");
     msgStr=msgStr+"<b>\ndbUser:</b>"+appConfig.getAppConfigParam("dbUser");
     msgStr=msgStr+"<b>\nappPort:</b>"+appConfig.getAppConfigParam("appPort");
-    if(appConfig["sysadminsMsgConfig"]) {
-        msgStr=msgStr+"<b>\nsysadminsMsgConfig:</b>"+JSON.stringify(appConfig["sysadminsMsgConfig"]);
+    var sysadminsMsgConfig= appConfig.getAppConfigParam("sysadminsMsgConfig");
+    if(sysadminsMsgConfig) {
+        msgStr=msgStr+"<b>\nsysadminsMsgConfig:</b>"+JSON.stringify(sysadminsMsgConfig);
     }else msgStr=msgStr+"\n<b>sysadminsMsgConfig</b> NOT SPECIFIED";
-    if(appConfig["sysadminsSchedule"]){                                                                      logger.info("sysadminsSchedule=",appConfig["sysadminsSchedule"]);
-        var sysadminsSchedule= appConfig.getAppConfigParam("sysadminsSchedule")
+    var sysadminsSchedule= appConfig.getAppConfigParam("sysadminsSchedule");
+    if(sysadminsSchedule){                                                                                   logger.info("sysadminsSchedule=",sysadminsSchedule);
         msgStr=msgStr+"<b>\nsysadminsSchedule:</b>"+sysadminsSchedule;
         if(cron.validate(sysadminsSchedule)==false){                                                         logger.error("sysadminsSchedule NOT VALID");
             msgStr=msgStr+" - NOT VALID";
         }else msgStr=msgStr+" - valid";
     } else msgStr=msgStr+"<b>\nsysadminsSchedule</b> NOT SPECIFIED";
-    if(appConfig["adminSchedule"]){                                                                          logger.info("adminSchedule=",appConfig["adminSchedule"]);
-        var adminSchedule= appConfig.getAppConfigParam('adminSchedule');
-        msgStr=msgStr+"<b>\nadminSchedule:</b>"+adminSchedule;
-        if(cron.validate(adminSchedule)==false){                                                             logger.error("adminSchedule NOT VALID");
-            msgStr=msgStr+" - NOT VALID";
-        }else msgStr=msgStr+" - valid";
-    } else msgStr=msgStr+"<b>\nadminSchedule</b> NOT SPECIFIED";
-    if(appConfig["dailySalesRetSchedule"]){                                                                  logger.info("dailySalesRetSchedule=",appConfig["dailySalesRetSchedule"]);
-        var dailySalesRetSchedule= appConfig.getAppConfigParam("dailySalesRetSchedule");
-        msgStr=msgStr+"<b>\ndailySalesRetSchedule:</b>"+dailySalesRetSchedule;
-        if(cron.validate(dailySalesRetSchedule)==false){                                                     logger.error("dailySalesRetSchedule NOT VALID");
-            msgStr=msgStr+" - NOT VALID";
-        }else msgStr=msgStr+" - valid";
-    } else msgStr=msgStr+"<b>\ndailySalesRetSchedule</b> NOT SPECIFIED";
-    if(appConfig["cashierSchedule"]){                                                                        logger.info("cashierSchedule=",appConfig["cashierSchedule"]);
-        var dCardClientsSchedule= appConfig.getAppConfigParam("dCardClientsSchedule");
+    var dCardClientsSchedule= appConfig.getAppConfigParam("dCardClientsSchedule");
+    if(dCardClientsSchedule){                                                                                logger.info("dCardClientsSchedule=",dCardClientsSchedule);
         msgStr=msgStr+"<b>\ndCardClientsSchedule:</b>"+dCardClientsSchedule;
         if(cron.validate(dCardClientsSchedule)==false){                                                      logger.error("dCardClientsSchedule NOT VALID");
             msgStr=msgStr+" - NOT VALID";
         }else msgStr=msgStr+" - valid";
     } else msgStr=msgStr+"<b>\ndCardClientsSchedule</b> NOT SPECIFIED";
-    database.connectToDB(function(errMsg){  console.log("database.connectToDB errMsg=",errMsg);
+    database.connectToDB(function(errMsg){
         if (errMsg){
             logger.error("Failed to connect to database on sendAppStartMsgToSysadmins! Reason:",errMsg);
-            sendMsgToAdmins(msgStr+"\n Failed to connect to database! Reason:"+errMsg);
-
+            sendMsgToSysadmins(msgStr+"\n Failed to connect to database! Reason:"+errMsg,kbActions);
             return;
         }
-        sendMsgToAdmins(msgStr + "\n Connected to database successfully!");
+        sendMsgToSysadmins(msgStr + "\n Connected to database successfully!",kbActions);
     });
 };
-function sendMsgToAdmins(msg){  console.log("sendMsgToAdmins");
-    database.getDbConnectionError(function(dbConnectionError){
-        var reconBut=false;
-        if(dbConnectionError)reconBut=true;
-        try{
-            var admins = JSON.parse(fs.readFileSync(path.join(__dirname, '../sysadmins.json')));
-        }catch(e){
-            logger.error("----------------- FAILED to get admin list. Reason: "+e);
-            return;
+function sendMsgToSysadmins(msg,kbActions){
+    try{
+        var registeredSysadmins = JSON.parse(fs.readFileSync(path.join(__dirname, '../sysadmins.json')));
+    }catch(e){
+        logger.error("FAILED to get admin list. Reason: "+e);
+        return;
+    }
+    var configSysadmins=appConfig.getAppConfigParam('sysadmins');
+    for(var i in configSysadmins){
+        var configSysadminTelNum=configSysadmins[i];
+        var registeredSysadminChatId=registeredSysadmins[configSysadminTelNum];
+        if(!registeredSysadminChatId) continue;
+        if(database.getDbConnectionError()){
+            logger.warn("DB connection failed. Sending msg to sysadmin. Chat ID: "+registeredSysadminChatId);
+            bot.sendMessage(registeredSysadminChatId, msg,
+                {parse_mode:"HTML",
+                    reply_markup: {
+                        keyboard: [
+                            [kbActions.connectToDB]
+                        ]}
+                });
+            continue;
         }
-        for(var j in admins){
-            var admin=admins[j];
-            for(var h in admin){
-                var adminChatId=admin[h];
-                if(adminChatId){
-                    if(reconBut){
-                        logger.warn("DB connection failed. Sending msg to sysadmin. Chat ID: "+adminChatId);
-                        bot.sendMessage(adminChatId, msg,
-                            {parse_mode:"HTML",
-                                reply_markup: {
-                                    keyboard: [
-                                        [KB.dbConnection]
-                                    ]}
-                            });
-                        continue;
-                    }
-                    logger.info("Sending msg to sysadmin. Chat ID: "+ adminChatId);
-                    bot.sendMessage(adminChatId, msg, {parse_mode:"HTML", reply_markup: {remove_keyboard: true} });
-                }
-            }
-        }
-    });
+        logger.info("Sending msg to sysadmin. Chat ID: "+ registeredSysadminChatId);
+        bot.sendMessage(registeredSysadminChatId, msg, {parse_mode:"HTML", reply_markup: {remove_keyboard: true} });
+    }
 }
+module.exports.sendMsgToSysadmins=sendMsgToSysadmins;
 
-function startSendingSysAdminMsgBySchedule(){                                                           logger.info("startSendingSysAdminMsgBySchedule");
-    if(!sysAdminSchedule||cron.validate(sysAdminSchedule)==false||!sysadminsMsgConfig )return;
-    var scheduleSysAdminMsg =cron.schedule(sysAdminSchedule,
+function startScheduleToSendSysadminsMsg(){                                                                     logger.info("startSendingSysadminsMsgBySchedule");
+    var configSysadminsSchedule=appConfig.getAppConfigParam('sysadminsSchedule'),
+        sysadminsMsgConfig = appConfig.getAppConfigParam('sysadminsMsgConfig');
+    if(!configSysadminsSchedule||cron.validate(configSysadminsSchedule)==false||!sysadminsMsgConfig )return;
+    var scheduleSysAdminMsg =cron.schedule(configSysadminsSchedule,
         function(){
             makeSysadminMsg(function(err, adminMsg){
                 if(err){
                     return;
                 }
-                sendMsgToAdmins(adminMsg);
+                sendMsgToSysadmins(adminMsg);
             });
         });
     scheduleSysAdminMsg.start();
 }
+startScheduleToSendSysadminsMsg();
 
 function makeSysadminMsg(callback){
     var adminMsg='<b>Информация системному администратору на '+moment(new Date()).format('HH:mm DD.MM.YYYY')+' </b> \n';
+    var sysadminsMsgConfig = appConfig.getAppConfigParam('sysadminsMsgConfig');
     getDiscUsageInfo(sysadminsMsgConfig, function(err, diskSpase){
         if(err){
             adminMsg +='\n '+err;
