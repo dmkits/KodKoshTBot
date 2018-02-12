@@ -37,53 +37,12 @@ module.exports= function(app) {
             function(result){   console.log("result=",result);
                 res.send(result);
             });
-        // var outData = {};
-        // outData.columns = dCardsTableColumns;
-        //
-        // outData.items = [];
-        // var queryText="select ChID, DCardID, InUse, ClientName, PhoneMob " +
-        //     "from r_DCards;";
-        // database.executeMSSQLQuery(queryText, function(err,result){
-        //     if(err){
-        //         outData.error=err.message;
-        //         res.send(outData);
-        //         return;
-        //     }
-        //     outData.identifier="DCardID";
-        //     outData.items=result.recordset;
-        //     res.send(outData);
-        // });
+
     });
     app.post("/DCards/storeDCardsTableData", function(req, res){
-        console.log("storeDCardsTableData req.body=",req.body);
-        var newData=req.body;
-        //newData.PhoneMob=newData.PhoneMob|| "";  // TODO undefined check
-
-        var outData={};
         database.storeTableDataItem({tableName:"r_DCards",idFieldName:"ChID",tableColumns:dCardsTableColumns,
             storeTableData:req.body}, function(err, res/*updateCount, resultItem*/){
 
         })
-
-        // database.executeMSSQLQuery("update r_DCards set InUse='"+newData.InUse+"', ClientName='"+newData.ClientName+"', " +
-        //     "PhoneMob='"+newData.PhoneMob+"' where DCardID='"+newData.DCardID+"'", function(err,result){   console.log("result=",result);
-        //     if(err){
-        //         outData.error=err;
-        //         res.send(outData);
-        //         return;
-        //     }
-        //     outData.updateCount=result.rowsAffected.length;
-        //     var queryText="select ChID, DCardID, InUse, ClientName, PhoneMob " +
-        //         "from r_DCards where DCardID='"+newData.DCardID+"'";
-        //     database.executeMSSQLQuery(queryText, function(err,result){
-        //         if(err){
-        //             outData.error=err.message;
-        //             res.send(outData);
-        //             return;
-        //         }
-        //         outData.resultItem=result.recordset[0];
-        //         res.send(outData);
-        //     });
-        // });
     });
 };

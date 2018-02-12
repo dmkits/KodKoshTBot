@@ -107,10 +107,10 @@ function selectParamsMSSQLQuery(query, parameters, callback) {                  
     }
     request.query(query,
         function (err, result) {
-            if (err) {
+            if (err) {                                                                          logger.error('database: selectParamsQuery error:',err.message,{});//test
                 callback(err);
                 return;
-            }                                                                                               //logger.debug('database: selectParamsQuery:',recordset,{});//test
+            }                                                                                  logger.debug('database: selectParamsQuery:',result.recordset,{});//test
             callback(null, result.recordset, result.rowsAffected.length);
         });
 };
@@ -137,7 +137,7 @@ module.exports.executeMSSQLQuery=function(query,callback){
  * paramsValueObj = {<paramName>:<paramValue>,...}
  * callback = function(err, updateCount)
  */
-module.exports.executeMSSQLParamsQuery= function(query, paramsValueObj, callback) {                                  logger.debug("database executeMSSQLParamsQuery:",query,parameters);
+module.exports.executeMSSQLParamsQuery= function(query, paramsValueObj, callback) {                         logger.debug("database executeMSSQLParamsQuery:",query,paramsValueObj);
     var request = new mssql.Request();
     var paramNames=Object.keys(paramsValueObj);
     for(var i in paramNames){
@@ -422,14 +422,14 @@ function insDataItem(params, resultCallback) {
         resultCallback({ error:"Failed insert data item! Reason:no data for insert!"});
         return;
     }
-    var queryFields="", queryInputParamsObj={}, queryFieldsValues="";
+    var queryFields="", queryInputParamsObj={}, queryFieldsValues="";           console.log("insDataItem1 params=",params);
     for(var fieldName in params.insData) {
         if (queryFields!="") queryFields+= ",";
         if (queryFieldsValues!="") queryFieldsValues+= ",";
         queryFields+= fieldName;
         queryFieldsValues+= "@"+fieldName;
         var insDataItemValue=params.insData[fieldName];
-        if(insDataItemValue&&(insDataItemValue instanceof Date)) {
+        if(insDataItemValue&&(insDataItemValue instanceof Date)) {    console.log("insDataItemValue instanceof Date=",insDataItemValue);
             insDataItemValue=moment(insDataItemValue).format("YYYY-MM-DD HH:mm:ss");
         }
         queryInputParamsObj[fieldName]=insDataItemValue;
@@ -509,7 +509,7 @@ function insTableDataWithNewID(params, resultCallback) {
         return;
     }
     var sqlSelectMaxID="select ISNULL(MAX("+idFieldName+"),0)+1 as MAXCHID from "+params.tableName;
-    database.selectMSSQLQuery(sqlSelectMaxID,function(err, recordset, count){
+    selectMSSQLQuery(sqlSelectMaxID,function(err, recordset, count){
         if(err) {                                                                                       logger.error("FAILED insTableDataWithNewID selectMSSQLQuery! Reason:",err.message,"!");//test
             resultCallback(err);
             return;
@@ -549,8 +549,12 @@ module.exports.storeTableDataItem = function (params, resultCallback) {
     }
     var idValue=params.storeTableData[idFieldName];
     if (idValue===undefined||idValue===null){//insert
-        params.storeTableData[idFieldName]= getUIDNumber();
-        insTableDataItem({tableName:params.tableName, idFieldName:idFieldName, tableColumns:params.tableColumns,
+       // // params.storeTableData[idFieldName]= getUIDNumber();
+       //  insTableDataItem({tableName:params.tableName, idFieldName:idFieldName, tableColumns:params.tableColumns,
+       //      insTableData:params.storeTableData}, resultCallback);
+       //  return;
+
+        insTableDataWithNewID({tableName:params.tableName, idFieldName:idFieldName, tableColumns:params.tableColumns,
             insTableData:params.storeTableData}, resultCallback);
         return;
     }
@@ -559,14 +563,6 @@ module.exports.storeTableDataItem = function (params, resultCallback) {
         updTableData:params.storeTableData}, resultCallback);
 };
 
-function getUIDNumber(){
-    var str= uid.time();
-    var len = str.length;
-    var num = BigNumber(0);
-    for (var i = (len - 1); i >= 0; i--)
-        num.plus(BigNumber(256).pow(i).mult(str.charCodeAt(i)));
-    return num.toString();
-}
 
 
 

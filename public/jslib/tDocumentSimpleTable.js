@@ -58,7 +58,7 @@ define(["dojo/_base/declare", "app", "tDocumentBase","dijit/form/Select", "hTabl
                 this.addChild(this.contentTable);
                 var instance = this;
                 this.contentTable.onUpdateContent = function(){ instance.onUpdateTableContent(); };
-                this.contentTable.onSelect = function(firstSelectedRowData, selection){
+                this.contentTable.onSelect = function(firstSelectedRowData, selection){ console.log("TemplateDocumentSimpleTable this.contentTable.onSelect firstSelectedRowData=",firstSelectedRowData);
                     this.setSelection(firstSelectedRowData, selection);
                     instance.onSelectTableContent(firstSelectedRowData, selection);
                 };

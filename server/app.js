@@ -46,8 +46,9 @@ app.use(function(req, res, next){
 try{
     var db=require('./database');
     require('./sysadmin')(app);
-    require('./clientsDCards')(app);
     require('./mainPage')(app);
+    require('./clientsDCards')(app);
+    require('./telegramMsg')(app);
     // var telBot= require('./telBot');
 } catch (e){
     console.log("FAILED TO LOAD APP MODULES! APP START IMPOSSIBLE! REASON:",e.message);
