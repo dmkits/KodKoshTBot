@@ -34,7 +34,7 @@ module.exports= function(app) {
     app.get('/clientsDCards/getDataForTable', function (req, res) {
         database.getDataForTable({source:"r_DCards",
                 tableColumns:dCardsTableColumns, identifier:dCardsTableColumns[0].data, conditions:req.query} ,
-            function(result){   console.log("result=",result);
+            function(result){
                 res.send(result);
             });
 

@@ -131,24 +131,24 @@ module.exports.executeMSSQLQuery=function(query,callback){
             callback(null, result.rowsAffected.length);
         });
 };
+
 /**
  * for MS SQL database query insert/update/delete
  * query= <MS SQL queryStr>
  * paramsValueObj = {<paramName>:<paramValue>,...}
  * callback = function(err, updateCount)
  */
-module.exports.executeMSSQLParamsQuery= function(query, paramsValueObj, callback) {                         logger.debug("database executeMSSQLParamsQuery:",query,paramsValueObj);
+module.exports.executeMSSQLParamsQuery= function(query, parameters, callback) {                 logger.debug("database executeMSSQLParamsQuery:",query,parameters);
     var request = new mssql.Request();
-    var paramNames=Object.keys(paramsValueObj);
-    for(var i in paramNames){
-        request.input(paramNames[i], paramsValueObj[paramNames[i]]);
+    for(var i in parameters){
+        request.input('p'+i,parameters[i]);
     }
     request.query(query,
         function (err, result) {
-            if (err) {                                                                                      logger.error("database executeMSSQLParamsQuery err=",err.message);
+            if (err) {                                                                          logger.error('database: selectParamsQuery error:',err.message,{});//test
                 callback(err);
                 return;
-            }
+            }                                                                                   logger.debug('database: selectParamsQuery:',result.recordset,{});//test
             callback(null, result.rowsAffected.length);
         });
 };
@@ -256,9 +256,11 @@ function getDataItemsForTable(params, resultCallback){
     for(var i in params.tableColumns) {
         params.fields.push(params.tableColumns[i].data);
     }
+    tableData.tableColumns=params.tableColumns;
     getSelectItems(params, function(err, recordset){
         if(err) tableData.error="Failed get data for table! Reason:"+err.message;
         tableData.items= recordset;
+        formatItemsByColumnsTypes(tableData);
         resultCallback(tableData);
     });
 }
@@ -311,6 +313,7 @@ function getTableColumnsDataForHTable(tableColumns){
         if(tableColData.readOnly!==undefined) tableColumnsDataItemForHTable.readOnly=tableColData.readOnly;
         if(tableColData.visible!==undefined) tableColumnsDataItemForHTable.visible=tableColData.visible;
         if(tableColData.format!==undefined) tableColumnsDataItemForHTable.format=tableColData.format;
+        if(tableColData.dateFormat!==undefined) tableColumnsDataItemForHTable.dateFormat=tableColData.dateFormat;
         if(tableColData.datetimeFormat!==undefined) tableColumnsDataItemForHTable.datetimeFormat=tableColData.datetimeFormat;
         if(tableColData.format!==undefined) tableColumnsDataItemForHTable.format=tableColData.format;
         if(tableColData.language!==undefined) tableColumnsDataItemForHTable.language=tableColData.language;
@@ -350,6 +353,19 @@ function getTableColumnsDataForHTable(tableColumns){
         } else if(!tableColumnsDataItemForHTable.type) tableColumnsDataItemForHTable.type="text";
     }
     return tableColumnsDataForHTable;
+}
+function formatItemsByColumnsTypes(tableData){
+    if(!tableData.tableColumns||!tableData.items||tableData.items.length==0) return tableData;
+    for(var i in tableData.tableColumns){
+        var colData= tableData.tableColumns[i];
+        if(colData.type=="date"&&colData.dateFormat){
+            for(var row in tableData.items){
+                var rowData= tableData.items[row];
+                if(!rowData||!rowData[colData.data]) continue;
+                rowData[colData.data]= moment(rowData[colData.data]).format(colData.dateFormat); //format rowData[colData.data] by colData.type=="date"&&colData.dateFormat
+            }
+        }
+    }
 }
 /**
  * params = { source,
@@ -398,7 +414,7 @@ function getDataForTable(params, resultCallback){
         return;
     }
     params.tableData=tableData;
-    getDataItemsForTable(params, resultCallback);
+    getDataItemsForTable(params,resultCallback);
 }
 module.exports.getDataForTable=getDataForTable;
 
@@ -422,20 +438,21 @@ function insDataItem(params, resultCallback) {
         resultCallback({ error:"Failed insert data item! Reason:no data for insert!"});
         return;
     }
-    var queryFields="", queryInputParamsObj={}, queryFieldsValues="";           console.log("insDataItem1 params=",params);
+    var queryFields="", queryInputParams=[], queryFieldsValues="";
     for(var fieldName in params.insData) {
         if (queryFields!="") queryFields+= ",";
         if (queryFieldsValues!="") queryFieldsValues+= ",";
         queryFields+= fieldName;
-        queryFieldsValues+= "@"+fieldName;
+        queryFieldsValues+= "@p"+queryInputParams.length;
         var insDataItemValue=params.insData[fieldName];
-        if(insDataItemValue&&(insDataItemValue instanceof Date)) {    console.log("insDataItemValue instanceof Date=",insDataItemValue);
+        if(insDataItemValue&&(insDataItemValue instanceof Date)) {
             insDataItemValue=moment(insDataItemValue).format("YYYY-MM-DD HH:mm:ss");
         }
-        queryInputParamsObj[fieldName]=insDataItemValue;
+      //  queryInputParamsObj[fieldName]=insDataItemValue;
+        queryInputParams.push(insDataItemValue);
     }
     var insQuery="insert into "+params.tableName+"("+queryFields+") values("+queryFieldsValues+")";
-    module.exports.executeMSSQLParamsQuery(insQuery,queryInputParamsObj,function(err, updateCount){
+    module.exports.executeMSSQLParamsQuery(insQuery,queryInputParams,function(err, updateCount){
         var insResult={};
         if(err) {
             insResult.error="Failed insert data item! Reason:"+err.message;
@@ -519,6 +536,18 @@ function insTableDataWithNewID(params, resultCallback) {
     });
 }
 
+function getDateFromFormattedStr(columnsData, tableData){
+    if(!columnsData||!tableData||columnsData.length==0) return tableData;
+
+    for(var i in columnsData){
+        var colData= columnsData[i];
+        if(colData.type=="date"&&colData.dateFormat){
+            if(tableData[colData.data])
+            tableData[colData.data]= moment(tableData[colData.data], colData.dateFormat).format('YYYY-MM-DD HH:mm:ss');
+        }
+    }
+}
+
 /**
  * params = { tableName, idFieldName, tableColumns,
  *      storeTableData = {<tableFieldName>:<value>,<tableFieldName>:<value>,<tableFieldName>:<value>,...}
@@ -548,12 +577,8 @@ module.exports.storeTableDataItem = function (params, resultCallback) {
         return;
     }
     var idValue=params.storeTableData[idFieldName];
+    getDateFromFormattedStr(params.tableColumns,params.storeTableData);
     if (idValue===undefined||idValue===null){//insert
-       // // params.storeTableData[idFieldName]= getUIDNumber();
-       //  insTableDataItem({tableName:params.tableName, idFieldName:idFieldName, tableColumns:params.tableColumns,
-       //      insTableData:params.storeTableData}, resultCallback);
-       //  return;
-
         insTableDataWithNewID({tableName:params.tableName, idFieldName:idFieldName, tableColumns:params.tableColumns,
             insTableData:params.storeTableData}, resultCallback);
         return;
@@ -562,257 +587,114 @@ module.exports.storeTableDataItem = function (params, resultCallback) {
    updTableDataItem({tableName:params.tableName, idFieldName:idFieldName, tableColumns:params.tableColumns,
         updTableData:params.storeTableData}, resultCallback);
 };
+/**
+ * params = { tableName, idFieldName,
+ *      tableColumns=[ {<tableColumnData>},... ],
+ *      updTableData = {<tableFieldName>:<value>,<tableFieldName>:<value>,<tableFieldName>:<value>,...}
+ * }
+ * resultCallback = function(result = { updateCount, resultItem:{<tableFieldName>:<value>,...}, error })
+ */
+function updTableDataItem(params, resultCallback) {
+    if (!params) {                                                                                      log.error("FAILED _updTableDataItem! Reason: no parameters!");//test
+        resultCallback({ error:"Failed update table data item! Reason:no function parameters!"});
+        return;
+    }
+    if(!params.tableName&&this.source) params.tableName=this.source;
+    if (!params.tableName) {                                                                            log.error("FAILED _updTableDataItem! Reason: no table name!");//test
+        resultCallback({ error:"Failed update table data item! Reason:no table name!"});
+        return;
+    }
+    if (!params.updTableData) {                                                                         log.error("FAILED _updTableDataItem "+params.tableName+"! Reason: no data for update!");//test
+        resultCallback({ error:"Failed update table data item! Reason:no data for update!"});
+        return;
+    }
+    var idFieldName= params.idFieldName;
+    if (!idFieldName) {                                                                                 log.error("FAILED _updTableDataItem "+params.tableName+"! Reason: no id field!");//test
+        resultCallback({ error:"Failed update table data item! Reason:no id field name!"});
+        return;
+    }
+    params.updData={};
+    if(this.fields){
+        for(var i in this.fields){
+            var fieldName=this.fields[i];
+            if(fieldName!=idFieldName)params.updData[fieldName]=params.updTableData[fieldName];
+        }
+    } else {
+        for(var updFieldName in params.updTableData)
+            if(updFieldName!=idFieldName) params.updData[updFieldName]=params.updTableData[updFieldName];
+    }
+    params.conditions={}; params.conditions[idFieldName+"="]=params.updTableData[idFieldName];
+    updDataItem(params, function(updResult){
+        if(updResult.error){
+            resultCallback(updResult);
+            return;
+        }
+        var resultFields=[];
+        for(var fieldName in params.updTableData) resultFields.push(fieldName);
+        var getResultConditions={}; getResultConditions[params.tableName+"."+idFieldName+"="]=params.updTableData[idFieldName];
+        getDataItemForTable({source:params.tableName, tableColumns:params.tableColumns, conditions:getResultConditions},
+            function(result){
+                if(result.error) updResult.error="Failed get result updated data item! Reason:"+result.error;
+                if (result.item) updResult.resultItem= result.item;
+                resultCallback(updResult);
+            });
+    });
+}
 
+/**
+ * params = { tableName,
+ *      updData = {<tableFieldName>:<value>,<tableFieldName>:<value>,<tableFieldName>:<value>,...},
+ *      conditions = { <tableFieldNameCondition>:<value>, ... }
+ * }
+ * resultCallback = function(result = { updateCount, error })
+ */
+function updDataItem(params, resultCallback) {
+    if (!params) {                                                                                      log.error("FAILED _updDataItem! Reason: no parameters!");//test
+        resultCallback({ error:"Failed update data item! Reason:no function parameters!"});
+        return;
+    }
+    if(!params.tableName&&this.source) params.tableName=this.source;
+    if (!params.tableName) {                                                                            log.error("FAILED _updDataItem! Reason: no table name!");//test
+        resultCallback({ error:"Failed update data item! Reason:no table name for update!"});
+        return;
+    }
+    if (!params.updData) {                                                                              log.error("FAILED _updDataItem "+params.tableName+"! Reason: no data for update!");//test
+        resultCallback({ error:"Failed update data item! Reason:no data for update!"});
+        return;
+    }
+    if (!params.conditions) {                                                                           log.error("FAILED _updDataItem "+params.tableName+"! Reason: no conditions!");//test
+        resultCallback({ error:"Failed update data item! Reason:no update conditions!"});
+        return;
+    }
+    var queryFields="", fieldsValues=[];
+    for(var fieldName in params.updData) {
+        if (queryFields!="") queryFields+= ",";
+        queryFields+= fieldName+"=@p"+fieldsValues.length;
+        var updDataItemValue=params.updData[fieldName];
+        if(updDataItemValue&&(updDataItemValue instanceof Date)) {
+            updDataItemValue=moment(updDataItemValue).format('YYYY-MM-DD HH:mm:ss');
+        }
+        fieldsValues.push(updDataItemValue);
+    }
+    var updQuery="update "+params.tableName+" set "+queryFields;
+    var queryConditions="";
+    for(var fieldNameCondition in params.conditions) {
 
+        if (queryConditions!="") queryConditions+= " and ";
+        queryConditions+= fieldNameCondition.replace("~","=")+"@p"+fieldsValues.length;
+        fieldsValues.push(params.conditions[fieldNameCondition]);
+    }
 
-
-
-// /**
-//  * params = { tableName, idFieldName,
-//  *      tableColumns=[ {<tableColumnData>},... ],
-//  *      updTableData = {<tableFieldName>:<value>,<tableFieldName>:<value>,<tableFieldName>:<value>,...}
-//  * }
-//  * resultCallback = function(result = { updateCount, resultItem:{<tableFieldName>:<value>,...}, error })
-//  */
-// function updTableDataItem(params, resultCallback) {
-//     if (!params) {                                                                                      logger.error("FAILED _updTableDataItem! Reason: no parameters!");//test
-//         resultCallback({ error:"Failed update table data item! Reason:no function parameters!"});
-//         return;
-//     }
-//   //  if(!params.tableName&&this.source) params.tableName=this.source;
-//     if (!params.tableName) {                                                                            logger.error("FAILED _updTableDataItem! Reason: no table name!");//test
-//         resultCallback({ error:"Failed update table data item! Reason:no table name!"});
-//         return;
-//     }
-//     if (!params.updTableData) {                                                                         logger.error("FAILED _updTableDataItem "+params.tableName+"! Reason: no data for update!");//test
-//         resultCallback({ error:"Failed update table data item! Reason:no data for update!"});
-//         return;
-//     }
-//     var idFieldName= params.idFieldName;
-//     if (!idFieldName) {                                                                                 logger.error("FAILED _updTableDataItem "+params.tableName+"! Reason: no id field!");//test
-//         resultCallback({ error:"Failed update table data item! Reason:no id field name!"});
-//         return;
-//     }
-//     params.updData={};
-//     if(this.fields){
-//         for(var i in this.fields){
-//             var fieldName=this.fields[i];
-//             if(fieldName!=idFieldName)params.updData[fieldName]=params.updTableData[fieldName];
-//         }
-//     } else {
-//         for(var updFieldName in params.updTableData)
-//             if(updFieldName!=idFieldName) params.updData[updFieldName]=params.updTableData[updFieldName];
-//     }
-//     params.conditions={}; params.conditions[idFieldName+"="]=params.updTableData[idFieldName];
-//    // var thisInstance=this;
-//     updDataItem(params, function(updResult){
-//         if(updResult.error){
-//             resultCallback(updResult);
-//             return;
-//         }
-//         var resultFields=[];
-//         for(var fieldName in params.updTableData) resultFields.push(fieldName);
-//         var getResultConditions={}; getResultConditions[params.tableName+"."+idFieldName+"="]=params.updTableData[idFieldName];
-//         getDataItemForTable({source:params.tableName, tableColumns:params.tableColumns, conditions:getResultConditions},
-//             function(result){
-//                 if(result.error) updResult.error="Failed get result updated data item! Reason:"+result.error;
-//                 if (result.item) updResult.resultItem= result.item;
-//                 resultCallback(updResult);
-//             });
-//     });
-// }
-
-// /**
-//  * params = { tableName,
-//  *      updData = {<tableFieldName>:<value>,<tableFieldName>:<value>,<tableFieldName>:<value>,...},
-//  *      conditions = { <tableFieldNameCondition>:<value>, ... }
-//  * }
-//  * resultCallback = function(result = { updateCount, error })
-//  */
-// function updDataItem(params, resultCallback) {
-//     if (!params) {                                                                                      logger.error("FAILED _updDataItem! Reason: no parameters!");//test
-//         resultCallback({ error:"Failed update data item! Reason:no function parameters!"});
-//         return;
-//     }
-//     // if(!params.tableName&&this.source) params.tableName=this.source;
-//     if (!params.tableName) {                                                                            logger.error("FAILED _updDataItem! Reason: no table name!");//test
-//         resultCallback({ error:"Failed update data item! Reason:no table name for update!"});
-//         return;
-//     }
-//     if (!params.updData) {                                                                              logger.error("FAILED _updDataItem "+params.tableName+"! Reason: no data for update!");//test
-//         resultCallback({ error:"Failed update data item! Reason:no data for update!"});
-//         return;
-//     }
-//     if (!params.conditions) {                                                                           logger.error("FAILED _updDataItem "+params.tableName+"! Reason: no conditions!");//test
-//         resultCallback({ error:"Failed update data item! Reason:no update conditions!"});
-//         return;
-//     }
-//     // ------------------------------
-//     var queryFields="", fieldsValues=[];
-//     for(var fieldName in params.updData) {
-//         if (queryFields!="") queryFields+= ",";
-//         queryFields+= fieldName+"=?";
-//         var updDataItemValue=params.updData[fieldName];
-//         if(updDataItemValue&&(updDataItemValue instanceof Date)) {
-//             updDataItemValue=dateFormat(updDataItemValue,"yyyy-mm-dd HH:MM:ss");
-//         }
-//         fieldsValues.push(updDataItemValue);
-//     }
-//     var updQuery="update "+params.tableName+" set "+queryFields;
-//     var queryConditions="";
-//     for(var fieldNameCondition in params.conditions) {
-//         if (queryConditions!="") queryConditions+= " and ";
-//         queryConditions+= fieldNameCondition.replace("~","=")+"?";
-//         fieldsValues.push(params.conditions[fieldNameCondition]);
-//     }
-//     updQuery+= " where "+queryConditions;
-//     database.executeMSSQLParamsQuery(updQuery,fieldsValues,function(err, updateCount){
-//         var updResult={};
-//         if(err) {
-//             updResult.error="Failed update data item! Reason:"+err.message;
-//             resultCallback(updResult);
-//             return;
-//         }
-//         updResult.updateCount= updateCount;
-//         if (updateCount==0) updResult.error="Failed update data item! Reason: no updated row count!";
-//         resultCallback(updResult);
-//     });
-//     // ---------------------------------
-//     var queryFields="", queryInputParamsObj={}, queryFieldsValues="";
-//     for(var fieldName in params.insData) {
-//         if (queryFields!="") queryFields+= ",";
-//         if (queryFieldsValues!="") queryFieldsValues+= ",";
-//         queryFields+= fieldName;
-//         queryFieldsValues+= "@"+fieldName;
-//         var insDataItemValue=params.insData[fieldName];
-//         if(insDataItemValue&&(insDataItemValue instanceof Date)) {
-//             insDataItemValue=moment(insDataItemValue).format("YYYY-MM-DD HH:mm:ss");
-//         }
-//         queryInputParamsObj[fieldName]=insDataItemValue;
-//     }
-//     var insQuery="update "+params.tableName+"("+queryFields+") values("+queryFieldsValues+")";
-//     module.exports.executeMSSQLParamsQuery(insQuery,queryInputParamsObj,function(err, updateCount){
-//         var insResult={};
-//         if(err) {
-//             insResult.error="Failed insert data item! Reason:"+err.message;
-//             resultCallback(insResult);
-//             return;
-//         }
-//         insResult.updateCount= updateCount;
-//         if (updateCount==0) insResult.error="Failed insert data item! Reason: no inserted row count!";
-//         resultCallback(insResult);
-//     });
-// }
-
-
-
-
-
-
-
-
-
-// ---------------------------------------------------------
-//
-// /**
-//  * params = { tableName, idFieldName, tableColumns,
-//  *      storeTableData = {<tableFieldName>:<value>,<tableFieldName>:<value>,<tableFieldName>:<value>,...}
-//  * }
-//  * resultCallback = function(result = { updateCount, resultItem:{<tableFieldName>:<value>,...}, error } )
-//  */
-// module.exports.storeDataItem=function(params, resultCallback){
-//     if (!params) {                                                                                      logger.error("FAILED _storeTableDataItem! Reason: no parameters!");//test
-//         resultCallback({ error:"Failed store table data item! Reason:no function parameters!"});
-//         return;
-//     }
-//     if (!params.tableName) params.tableName=this.source;
-//     if (!params.tableName) {                                                                            logger.error("FAILED _storeTableDataItem! Reason: no table name!");//test
-//         resultCallback({ error:"Failed store table data item! Reason:no table name for store!"});
-//         return;
-//     }
-//     if (!params.storeTableData) {                                                                       logger.error("FAILED _storeTableDataItem "+params.tableName+"! Reason: no data for store!");//test
-//         resultCallback({ error:"Failed store table data item! Reason:no data for store!"});
-//         return;
-//     }
-//     var idFieldName= params.idFieldName;
-//     if (!idFieldName) {                                                                                 logger.error("FAILED _storeTableDataItem "+params.tableName+"! Reason: no id field!");//test
-//         resultCallback({ error:"Failed store table data item! Reason:no id field name!"});
-//         return;
-//     }
-//     if (!params.tableColumns) {                                                                         logger.error("FAILED _storeTableDataItem "+params.tableName+"! Reason: no table columns!");//test
-//         resultCallback({ error:"Failed store table data item! Reason:no table columns!"});
-//         return;
-//     }
-//     var idValue=params.storeTableData[idFieldName];
-//     if (idValue===undefined||idValue===null){//insert
-//         params.storeTableData[idFieldName]=getUIDNumber();
-//         insTableDataItem({tableName:params.tableName, idFieldName:idFieldName, tableColumns:params.tableColumns,
-//             insTableData:params.storeTableData}, resultCallback);
-//         return;
-//     }
-//     //update
-//     this.updTableDataItem({tableName:params.tableName, idFieldName:idFieldName, tableColumns:params.tableColumns,
-//         updTableData:params.storeTableData}, resultCallback);
-// };
-
-//
-// /**
-//  * params = { tableName, idFieldName, tableColumns
-//  *      insTableData = {<tableFieldName>:<value>,<tableFieldName>:<value>,<tableFieldName>:<value>,...}
-//  * }
-//  * resultCallback = function(result = { updateCount, resultItem:{<tableFieldName>:<value>,...}, error })
-//  */
-// function insTableDataItem(params, resultCallback) {
-//     if (!params) {                                                                                          logger.error("FAILED _insTableDataItem! Reason: no parameters!");//test
-//         resultCallback({ error:"Failed insert table data item! Reason:no parameters!"});
-//         return;
-//     }
-//     if(!params.tableName&&this.source) params.tableName=this.source;
-//     if (!params.tableName) {                                                                                logger.error("FAILED _insTableDataItem! Reason: no table name!");//test
-//         resultCallback({ error:"Failed insert table data item! Reason:no table name!"});
-//         return;
-//     }
-//     if (!params.insTableData) {                                                                             logger.error("FAILED _insTableDataItem "+params.tableName+"! Reason: no data for insert!");//test
-//         resultCallback({ error:"Failed insert table data item! Reason:no data for insert!"});
-//         return;
-//     }
-//     var idFieldName= params.idFieldName;
-//     if (!idFieldName) {                                                                                     logger.error("FAILED _insTableDataItem "+params.tableName+"! Reason: no id field!");//test
-//         resultCallback({ error:"Failed insert table data item! Reason:no id field name!"});
-//         return;
-//     }
-//     if (!params.tableColumns) {                                                                             logger.error("FAILED _insTableDataItem "+params.tableName+"! Reason: no table columns!");//test
-//         resultCallback({ error:"Failed insert table data item! Reason:no table columns!"});
-//         return;
-//     }
-//     params.insData={};
-//     if(this.fields){
-//         for(var i in this.fields){
-//             var fieldName=this.fields[i];
-//             params.insData[fieldName]=(params.insTableData[fieldName]==undefined)?null:params.insTableData[fieldName];
-//         }
-//     } else params.insData=params.insTableData;
-//    // var thisInstance=this;
-//     insDataItem(params, function(insResult){
-//         if(insResult.error){
-//             resultCallback(insResult);
-//             return;
-//         }
-//         var resultFields=[];
-//         for(var fieldName in params.insTableData) resultFields.push(fieldName);
-//         var getResultConditions={}; getResultConditions[params.tableName+"."+idFieldName+"="]=params.insTableData[idFieldName];
-//         getDataItemForTable({source:params.tableName, tableColumns:params.tableColumns, conditions:getResultConditions},
-//             function(result){
-//                 if(result.error) insResult.error="Failed get result inserted data item! Reason:"+result.error;
-//                 if (result.item) insResult.resultItem= result.item;
-//                 resultCallback(insResult);
-//             });
-//     });
-// }
-//
-//
-//
-
-
-
-
+    updQuery+= " where "+queryConditions;
+    module.exports.executeMSSQLParamsQuery(updQuery,fieldsValues,function(err, updateCount){
+        var updResult={};
+        if(err) {
+            updResult.error="Failed update data item! Reason:"+err.message;
+            resultCallback(updResult);
+            return;
+        }
+        updResult.updateCount= updateCount;
+        if (updateCount==0) updResult.error="Failed update data item! Reason: no updated row count!";
+        resultCallback(updResult);
+    });
+}

@@ -9,11 +9,11 @@ module.exports= function(app){
     });
 
     var botMsgTableColumns=[
-        {data: "ChID", name: "ChID", width: 100, type: "text",visible:false},
+        {data: "ChID", name: "Номер", width: 100, type: "text", readOnly:true},
         {data: "DocDate", name: "Дата рассылки", width: 100, type: "date", dateFormat:"DD.MM.YYYY", correctFormat: true /*,datetimeFormat:"DD.MM.YYYY"*/},
         {data: "Msg", name: "Текст сообщения", width: 400, type: "text"},
         {data: "MsgHours", name: "Часы рассылки", width: 100, type: "text"},
-        {data: "SendHours", name: "Сообщения отправлены", width: 100, type: "text"},
+        {data: "SendHours", name: "Сообщения отправлены", width: 100, type: "text"}
     ];
     app.get('/botMsg/getDataForTable', function (req, res) {
         database.getDataForTable({source:"it_BotMessages",
@@ -22,41 +22,18 @@ module.exports= function(app){
                 res.send(result);
             });
     });
-
     app.get('/botMsg/newDataForBotMsgTable', function (req, res) {
         setDataItemForTable({tableColumns:botMsgTableColumns,
-                values:[null,moment(new Date()).format("YYYY-MM-DD"),"Новое сообщение","13,18",""]},
+                values:[null,moment(new Date()).format("DD.MM.YYYY"),"Новое сообщение","13,18",""]},
             function(result){
                 res.send(result);
             });
     });
-
     app.post("/botMsg/storeBotMsgTableData", function(req, res){
-        var dataToStore=req.body;
-        // for(var i in dataToStore){
-        //     if(i.indexOf('DocDate')==0){
-        //         var dateFormatted=moment(dataToStore[i]).format('YYYY-MM-DD');
-        //         dataToStore[i]=dateFormatted;
-        //     }
-        // }
         database.storeTableDataItem({tableName:"it_BotMessages",idFieldName:"ChID",tableColumns:botMsgTableColumns,
                 storeTableData:req.body}, function(result){
             res.send(result);
         })
-        // var dataToInsert={};
-        // dataToInsert.tableName="it_BotMessages";
-        // dataToInsert.insData =req.body;
-        // var outData={};
-        // if(newData.ChID){
-        //     prepareUpdateTableStatement(newData, function(err, res){
-        //
-        //     });
-        //     return;
-        // }
-        // dataToInsert.idFieldName="ChID";
-        // insDataItemWithNewID(dataToInsert, function(err, res){
-        //
-        // });
     });
 };
 
