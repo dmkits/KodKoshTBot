@@ -380,7 +380,7 @@ define(["dojo/_base/declare", "dijit/layout/ContentPane","dojox/widget/Standby",
                                 if(!result.items) result.items=[];
                                 instance.loadingGif.hide();
                                 instance.updateContent(result, {callUpdateContent:params.callUpdateContent, resetSelection:false});
-                                var sCondition= JSON.stringify(params.condition);
+                                var sCondition= JSON.stringify(params.condition);                       console.log("setContentFromUrl sCondition=",sCondition);
                                 if(sCondition.length==0||sCondition==="{}"){ instance.loadingGif.hide(); return; }  //if condition is Empty
                                 Request.getJSONData({url:params.url, condition:params.condition}
                                     ,/*postaction*/function(result){

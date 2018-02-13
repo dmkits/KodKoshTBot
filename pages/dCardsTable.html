@@ -23,14 +23,14 @@
                         rightToolPane:{title:"Действия",
                             buttons:{/*insertTableRow:"Добавить",*/ allowEditTableSelectedRow:"Изменить",
                                 storeTableSelectedRow:"Сохранить"/*,deleteTableSelectedRow:"Удалить"*/}},
-                        dataURL:"/clientsDCards/getDataForTable", dataURLCondition:{"ChID>":0},
+                        dataURL:"/clientsDCards/getDataForTable", dataURLCondition:{"ChID>0 and DCTypeCode in(1,2)":null},
                        //dataNewURL:"/clientsDCards/newDataForDCardsTable",
                         dataStoreURL:"/clientsDCards/storeDCardsTableData",
                         //dataDeleteURL:"/clientsDCards/deleteTableDataItem"
                 })
-                    // .addCheckBtnCondition("Поставщики",{width:90,contentTableConditions:{"IS_SUPPLIER~":"1"}})
-                    // .addCheckBtnCondition("Покупатели",{width:85,contentTableConditions:{"IS_BUYER~":"1"}})
-                    // .addCheckBtnCondition("Прочие",{width:70,contentTableConditions:{"IS_SUPPLIER~":"0","IS_BUYER~":"0"}})
+                    .addCheckBtnCondition("Зарегистрированные",{width:90,contentTableConditions:{"LTRIM(ISNULL(TChatID,''))<>'' ":null}})
+                    .addCheckBtnCondition("Незарегистрированные",{width:85,contentTableConditions:{"LTRIM(ISNULL(TChatID,''))='' ":null}})
+                    //.addCheckBtnCondition("Все",{width:70,contentTableConditions:{"1~":1}})
                     .addTotalCountNumberBox("ИТОГО строк:", 150, {style:"font-weight:bold;",inputStyle:"width:50px"})
                     .addContentTablePopupMenuTableRowsAction("Добавить строки",{actionName:"insertTableRowsAfterSelected",rowPosName:"POS"})//rowPosIndexName:"POSIND"
                     .addContentTablePopupMenuTableRowsAction("Изменить строки",{actionName:"allowEditTableSelectedRows"})

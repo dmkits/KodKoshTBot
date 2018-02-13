@@ -28,9 +28,6 @@
                         dataStoreURL:"/botMsg/storeBotMsgTableData",
                        // dataDeleteURL:"/botMsg/contractors/deleteDirContractorsTableData"
                 })
-                    // .addCheckBtnCondition("Поставщики",{width:90,contentTableConditions:{"IS_SUPPLIER~":"1"}})
-                    // .addCheckBtnCondition("Покупатели",{width:85,contentTableConditions:{"IS_BUYER~":"1"}})
-                    // .addCheckBtnCondition("Прочие",{width:70,contentTableConditions:{"IS_SUPPLIER~":"0","IS_BUYER~":"0"}})
                     .addTotalCountNumberBox("ИТОГО строк:", 150, {style:"font-weight:bold;",inputStyle:"width:50px"})
                     .addContentTablePopupMenuTableRowsAction("Добавить строки",{actionName:"insertTableRowsAfterSelected",rowPosName:"POS"})//rowPosIndexName:"POSIND"
                     .addContentTablePopupMenuTableRowsAction("Изменить строки",{actionName:"allowEditTableSelectedRows"})

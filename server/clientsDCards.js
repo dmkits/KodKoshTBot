@@ -31,7 +31,7 @@ module.exports= function(app) {
     // FactCity	FactStreet	FactHouse	FactBlock	FactAptNo	FactPostIndex
     // PhoneMob	PhoneHome	PhoneWork	EMail	SumBonus	Status	TChatID
 
-    app.get('/clientsDCards/getDataForTable', function (req, res) {
+    app.get('/clientsDCards/getDataForTable', function (req, res) {     console.log("/clientsDCards/getDataForTable req.query=",req.query);
         database.getDataForTable({source:"r_DCards",
                 tableColumns:dCardsTableColumns, identifier:dCardsTableColumns[0].data, conditions:req.query} ,
             function(result){

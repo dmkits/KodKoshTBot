@@ -76,7 +76,7 @@ define(["dojo/_base/declare", "app", "tDocumentBase","dijit/form/Select", "hTabl
                 this.createContentTable(HTable);
                 this.createRightContent();
             },
-            loadTableContent: function(additionalCondition){                                                            //console.log("TemplateDocumentSimpleTable loadTableContent");
+            loadTableContent: function(additionalCondition){                                                    //console.log("TemplateDocumentSimpleTable loadTableContent",this.dataURLCondition,additionalCondition);
                 var condition = (this.dataURLCondition)?this.dataURLCondition:{};
                 if(this.headerData){
                     for(var i=0; i<this.headerData.length;i++){
@@ -95,7 +95,7 @@ define(["dojo/_base/declare", "app", "tDocumentBase","dijit/form/Select", "hTabl
                 if (additionalCondition)
                     for(var addConditionItemName in additionalCondition)
                         condition[addConditionItemName.replace("=","~")]=additionalCondition[addConditionItemName];
-                this.contentTable.setContentFromUrl({url:this.dataURL,condition:condition, clearContentBeforeLoad:true});
+                this.contentTable.setContentFromUrl({url:this.dataURL,condition:condition, clearContentBeforeLoad:true});   console.log("TemplateDocumentSimpleTable loadTableContent condition",condition);
             },
             reloadTableContentByCondition: function(additionalCondition){                                                     //console.log("TemplateDocumentSimpleTable reloadTableContentByCondition condition=",condition);
                 this.loadTableContent(additionalCondition);
