@@ -19,26 +19,25 @@
 
             DCards_ContentContainer.document =
                 APP.childFor(DCards_ContentContainer, "TableClientDCards",
-                    TDocumentSimpleTableEditable, {titleText:"Дисконтные карты", rightPane:{width:150},
-                        rightToolPane:{title:"Действия",
-                            buttons:{/*insertTableRow:"Добавить",*/ allowEditTableSelectedRow:"Изменить",
-                                storeTableSelectedRow:"Сохранить"/*,deleteTableSelectedRow:"Удалить"*/}},
-                        dataURL:"/clientsDCards/getDataForTable", dataURLCondition:{"ChID>0 and DCTypeCode in(1,2)":null},
+                    TDocumentSimpleTableEditable, {titleText:"Дисконтные бонусные карты", //rightPane:{width:150},
+                        buttonExportToExcel:false,
+                        // rightToolPane:{title:"Действия",
+                        //     buttons:{/*insertTableRow:"Добавить",*/ allowEditTableSelectedRow:"Изменить",
+                        //         storeTableSelectedRow:"Сохранить"/*,deleteTableSelectedRow:"Удалить"*/}},
+                        dataURL:"/clientsDCards/getDataForTable", dataURLCondition:{"ChID>0 and DCTypeCode in(2)":null},
                        //dataNewURL:"/clientsDCards/newDataForDCardsTable",
-                        dataStoreURL:"/clientsDCards/storeDCardsTableData",
-                        //dataDeleteURL:"/clientsDCards/deleteTableDataItem"
-                })
-                    .addCheckBtnCondition("Зарегистрированные",{width:90,contentTableConditions:{"LTRIM(ISNULL(TChatID,''))<>'' ":null}})
-                    .addCheckBtnCondition("Незарегистрированные",{width:85,contentTableConditions:{"LTRIM(ISNULL(TChatID,''))='' ":null}})
-                    //.addCheckBtnCondition("Все",{width:70,contentTableConditions:{"1~":1}})
+                        dataStoreURL:"/clientsDCards/storeDCardsTableData", dataDeleteURL:"/clientsDCards/deleteTableDataItem"
+                    })
+                    .addCheckBtnCondition("Зарегистрированные",{width:90,contentTableConditions:{"LTRIM(ISNULL(TChatID,''))<>''":null}})
+                    .addCheckBtnCondition("Незарегистрированные",{width:85,contentTableConditions:{"LTRIM(ISNULL(TChatID,''))=''":null}})
                     .addTotalCountNumberBox("ИТОГО строк:", 150, {style:"font-weight:bold;",inputStyle:"width:50px"})
-                    .addContentTablePopupMenuTableRowsAction("Добавить строки",{actionName:"insertTableRowsAfterSelected",rowPosName:"POS"})//rowPosIndexName:"POSIND"
+                    .addContentTablePopupMenuTableRowsAction("Добавить строки",{actionName:"insertTableRowsAfterSelected"})
                     .addContentTablePopupMenuTableRowsAction("Изменить строки",{actionName:"allowEditTableSelectedRows"})
                     .addContentTablePopupMenuTableRowsAction("Сохранить строки",{actionName:"storeTableSelectedRows"})
-                    .addContentTableRowChangeCallback(function(changedRowData, contentTable, params, nextCallback){
-                        // changedRowData.item("NOT_USED").setValue(0);
-                        nextCallback();
-                    })
+                    // .addContentTableRowChangeCallback(function(changedRowData, contentTable, params, nextCallback){
+                    //     // changedRowData.item("NOT_USED").setValue(0);
+                    //     nextCallback();
+                    // })
                     .startUp();
             DCards_PageContainer.layout();
         })

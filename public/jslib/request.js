@@ -20,7 +20,7 @@ define(["dojo/_base/declare", "dojo/request", "dijit/registry", "dialogs"],
                 if(condition && typeof(condition)==="object"){
                     var scondition;
                     for(var condItem in condition){
-                        if (condition[condItem]!==undefined&&condition[condItem]!==null)
+                        if (condition[condItem]!==undefined)
                             scondition = (!scondition) ? condItem+"="+condition[condItem] : scondition+"&"+condItem+"="+condition[condItem];
                     }
                     if (scondition) url=url+"?"+scondition;
@@ -97,7 +97,7 @@ define(["dojo/_base/declare", "dojo/request", "dijit/registry", "dialogs"],
                 if(condition && typeof(condition)==="object"){
                     var scondition;
                     for(var condItem in condition){
-                        if (condition[condItem]!==undefined&&condition[condItem]!==null)
+                        if (condition[condItem]!==undefined)
                             scondition = (!scondition) ? condItem+"="+condition[condItem] : scondition+"&"+condItem+"="+condition[condItem];
                     }
                     if (scondition) url=url+"?"+scondition;

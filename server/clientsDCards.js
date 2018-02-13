@@ -7,19 +7,20 @@ module.exports= function(app) {
     });
     var dCardsTableColumns=[
         // {data: "ChID", name: "ChID", width: 100, type: "text", visible:false},
-        {data: "DCardID", name: "Номер катры", width: 120, type: "text", align:"center"},
-        //{data: "Discount", name: "Discount", width: 100, type: "text"},
-        //{data: "SumCC", name: "SumCC", width: 100, type: "text"},
+        {data: "DCardID", name: "Номер (штрихкод)", width: 120, type: "text", align:"center"},
         {data: "InUse", name: "Активна", width: 70, type: "checkboxMSSQL", align:"center"},
-        //{data: "Notes", name: "Notes", width: 100, type: "text"},
-        //  {data: "IsCrdCard", name: "IsCrdCard", width: 100, type: "text"},
-        //{data: "EDate", name: "EDate", width: 100, type: "text",datetimeFormat:"DD.MM.YYYY HH:mm:ss" },
         {data: "ClientName", name: "Полное имя клиента", width: 300, type: "text"},
+        {data: "Discount", name: "Скидка, %", width: 70, type: "text", align:"center"},
+        {data: "SumBonus", name: "Сумма бонусов", width: 70, type: "numeric"},
+        {data: "PhoneMob", name: "Моб. тел.", width: 120, type: "text", align:"center"},
+        {data: "Notes", name: "Примечание", width: 300, type: "text"},
+        {data: "EDate", name: "Конечная дата", width: 120, type: "text",datetimeFormat:"DD.MM.YYYY", align:"center"},
+        //{data: "SumCC", name: "SumCC", width: 100, type: "text"},
+        //  {data: "IsCrdCard", name: "IsCrdCard", width: 100, type: "text"},
         //{data: "DCTypeCode", name: "DCTypeCode", width: 100, type: "text"},
         //{data: "BirthDate", name: "BirthDate", width: 100, type: "text",datetimeFormat:"DD.MM.YYYY"},
         //  {data: "FactDistrict", name: "FactDistrict", width: 100, type: "text"},
         // {data: "FactCity", name: "FactCity", width: 100, type: "text"},
-        {data: "PhoneMob", name: "Моб. тел.", width: 120, type: "text", align:"center"},
         //{data: "PhoneHome", name: "PhoneHome", width: 100, type: "text"},
         //{data: "EMail", name: "EMail", width: 100, type: "text"},
         //{data: "Status", name: "Status", width: 100, type: "text"},
@@ -31,7 +32,7 @@ module.exports= function(app) {
     // FactCity	FactStreet	FactHouse	FactBlock	FactAptNo	FactPostIndex
     // PhoneMob	PhoneHome	PhoneWork	EMail	SumBonus	Status	TChatID
 
-    app.get('/clientsDCards/getDataForTable', function (req, res) {     console.log("/clientsDCards/getDataForTable req.query=",req.query);
+    app.get('/clientsDCards/getDataForTable', function (req, res) {
         database.getDataForTable({source:"r_DCards",
                 tableColumns:dCardsTableColumns, identifier:dCardsTableColumns[0].data, conditions:req.query} ,
             function(result){

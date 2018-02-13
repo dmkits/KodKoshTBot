@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title></title>
@@ -19,23 +19,23 @@
 
             botMsg_ContentContainer.document =
                 APP.childFor(botMsg_ContentContainer, "TableBotMsg",
-                    TDocumentSimpleTableEditable, {titleText:"Рассылка", rightPane:{width:150},
-                        rightToolPane:{title:"Действия",
+                    TDocumentSimpleTableEditable, {titleText:"Рассылка сообщений в телеграм",
+                        buttonExportToExcel:false,
+                        rightPane:{width:150}, rightToolPane:{title:"Действия",
                             buttons:{insertTableRow:"Добавить", allowEditTableSelectedRow:"Изменить",
                                 storeTableSelectedRow:"Сохранить"/*,deleteTableSelectedRow:"Удалить"*/}},
                         dataURL:"/botMsg/getDataForTable",dataURLCondition:{"ChID>":0},
-                        dataNewURL:"/botMsg/newDataForBotMsgTable",
-                        dataStoreURL:"/botMsg/storeBotMsgTableData",
+                        dataNewURL:"/botMsg/newDataForBotMsgTable", dataStoreURL:"/botMsg/storeBotMsgTableData",
                        // dataDeleteURL:"/botMsg/contractors/deleteDirContractorsTableData"
-                })
+                    })
                     .addTotalCountNumberBox("ИТОГО строк:", 150, {style:"font-weight:bold;",inputStyle:"width:50px"})
                     .addContentTablePopupMenuTableRowsAction("Добавить строки",{actionName:"insertTableRowsAfterSelected",rowPosName:"POS"})//rowPosIndexName:"POSIND"
                     .addContentTablePopupMenuTableRowsAction("Изменить строки",{actionName:"allowEditTableSelectedRows"})
                     .addContentTablePopupMenuTableRowsAction("Сохранить строки",{actionName:"storeTableSelectedRows"})
-                    .addContentTableRowChangeCallback(function(changedRowData, contentTable, params, nextCallback){
-                        // changedRowData.item("NOT_USED").setValue(0);
-                        nextCallback();
-                    })
+                    // .addContentTableRowChangeCallback(function(changedRowData, contentTable, params, nextCallback){
+                    //     // changedRowData.item("NOT_USED").setValue(0);
+                    //     nextCallback();
+                    // })
                     .startUp();
             botMsg_PageContainer.layout();
         })

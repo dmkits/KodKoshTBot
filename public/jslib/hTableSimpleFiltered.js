@@ -289,7 +289,7 @@ define(["dojo/_base/declare", "hTableSimple"], function(declare, HTableSimple){
                 }
             }
         },
-        setDataColumns: function(newDataColumns){                                                                       //console.log("HTableSimpleFiltered setDataColumns",newDataColumns,this.getHandsonTable().view);//this.domNode.firstChild.childNodes[1]
+        setDataColumns: function(newDataColumns){                                               //console.log("HTableSimpleFiltered setDataColumns",newDataColumns/*,this.getHandsonTable().view*/);//this.domNode.firstChild.childNodes[1]
             if(!newDataColumns) {
                 this.htColumns=[]; this.htVisibleColumns = [];
                 return;
@@ -389,11 +389,11 @@ define(["dojo/_base/declare", "hTableSimple"], function(declare, HTableSimple){
             var filtered=false;
             if(this.htData!==null) {//loadTableContent
                 filtered= this.filterContentData();
-                if(params.resetSelection!==false) this.resetSelection();
+                if(params&&params.resetSelection!==false) this.resetSelection();
             } else {//clearTableDataContent
                 this.clearContent();
             }
-            if (params.callOnUpdateContent===false) return;
+            if (params&&params.callOnUpdateContent===false) return;
             this.onUpdateContent({filtered:filtered});
         },
         /**

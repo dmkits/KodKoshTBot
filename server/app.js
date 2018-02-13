@@ -12,15 +12,14 @@ try {
     var bodyParser = require('body-parser');
     app.use(cookieParser());
     app.use(bodyParser.urlencoded({ extended: true }));
-    app.use(bodyParser.json());
     app.use(bodyParser.text());
+    app.use(bodyParser.json());
     app.use('/',express.static('public'));
 } catch (e){
     console.log("FAILED TO LOAD CORE MODULES! APP START IMPOSSIBLE!");
     logger.error("FAILED TO LOAD CORE MODULES! APP START IMPOSSIBLE!");
     return;
 }
-
 
 try {
     var appConfig=require ('./appConfig');
@@ -32,14 +31,14 @@ try {
     logger.error("FAILED TO LOAD appConfig! APP START IMPOSSIBLE! REASON:",e.message);
     return;
 }
-var appPort= appConfig.getAppConfigParam("appPort") || 80;;
+var appPort= appConfig.getAppConfigParam("appPort") || 80;
 
 process.on('uncaughtException', function(err) {
     logger.error('Server process failed! Reason:', err);
 });
 
 app.use(function(req, res, next){
-    logger.info("req.url=",req.url);
+    logger.info(req.method," url=",req._parsedUrl.pathname," params:",req.query,{});
     next();
 });
 
@@ -63,4 +62,3 @@ db.connectToDB(function(){
     });
     // telBot.sendStartMsg();
 });
-

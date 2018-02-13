@@ -83,48 +83,48 @@ module.exports.getClientsForSendingMsg=function(callback){
 };
 
 
-function selectMSSQLQuery(query, callback) {                                                    logger.debug("database selectMSSQLQuery query:",query);
+function selectMSSQLQuery(query, callback) {                                                        logger.debug("database selectMSSQLQuery query:",query);
     var request = new mssql.Request();
     request.query(query,
         function (err, result) {
-            if (err) {
+            if (err) {                                                                              logger.error('database: selectMSSQLQuery error:',err.message,{});//test
                 callback(err);
                 return;
             }
             callback(null, result.recordset, result.rowsAffected.length);
         });
-};
+}
 
 /**
  * for MS SQL database query select
  * parameters = [ <value1>, <value2>, ...] - values for replace '@p<Index>' in query
  * callback = function(err, recordset, count)
  */
-function selectParamsMSSQLQuery(query, parameters, callback) {                                  logger.debug("database selectParamsMSSQLQuery query:",query," parameters:",parameters,{});
+function selectParamsMSSQLQuery(query, parameters, callback) {                                      logger.debug("database selectParamsMSSQLQuery query:",query," parameters:",parameters,{});
     var request = new mssql.Request();
     for(var i in parameters){
         request.input('p'+i,parameters[i]);
     }
     request.query(query,
         function (err, result) {
-            if (err) {                                                                          logger.error('database: selectParamsQuery error:',err.message,{});//test
+            if (err) {                                                                              logger.error('database: selectParamsMSSQLQuery error:',err.message,{});//test
                 callback(err);
                 return;
-            }                                                                                  logger.debug('database: selectParamsQuery:',result.recordset,{});//test
+            }                                                                                       //logger.debug('database: selectParamsMSSQLQuery:',result.recordset,{});//test
             callback(null, result.recordset, result.rowsAffected.length);
         });
-};
+}
 
 /**
  * for MS SQL database query insert/update/delete
  * query= <MS SQL queryStr>
  * callback = function(err, updateCount)
  */
-module.exports.executeMSSQLQuery=function(query,callback){
+module.exports.executeMSSQLQuery=function(query,callback){                                      logger.debug("database executeMSSQLQuery:",query);
     var request = new mssql.Request();
     request.query(query,
         function(err,result){
-            if(err){
+            if(err){                                                                            logger.error('database: executeMSSQLQuery error:',err.message,{});//test
                 callback(err);
                 return;
             }
@@ -145,10 +145,10 @@ module.exports.executeMSSQLParamsQuery= function(query, parameters, callback) { 
     }
     request.query(query,
         function (err, result) {
-            if (err) {                                                                          logger.error('database: selectParamsQuery error:',err.message,{});//test
+            if (err) {                                                                          logger.error('database: executeMSSQLParamsQuery error:',err.message,{});//test
                 callback(err);
                 return;
-            }                                                                                   logger.debug('database: selectParamsQuery:',result.recordset,{});//test
+            }                                                                                   logger.debug('database: executeMSSQLParamsQuery:',result.recordset,{});//test
             callback(null, result.rowsAffected.length);
         });
 };
@@ -185,7 +185,7 @@ function getSelectItems(params, resultCallback){
     if (params.conditions&&typeof(params.conditions)=="object"&&params.conditions.length===undefined) {//object
         for(var conditionItem in params.conditions) {
             var conditionItemValue=params.conditions[conditionItem];
-            var conditionItemValueQuery= (conditionItemValue===null)?conditionItem:conditionItem+"@p"+coditionValues.length;
+            var conditionItemValueQuery= (conditionItemValue===null||conditionItemValue==='null')?conditionItem:conditionItem+"@p"+coditionValues.length;
             conditionItemValueQuery= conditionItemValueQuery.replace("~","=");
             wConditionQuery= (!wConditionQuery)?conditionItemValueQuery:wConditionQuery+" and "+conditionItemValueQuery;
             if (conditionItemValue!==null) coditionValues.push(conditionItemValue);

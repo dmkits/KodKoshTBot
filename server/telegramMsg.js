@@ -1,19 +1,17 @@
 var database=require('./database');
-var path=require('path');
-var moment=require('moment');
+var path=require('path'), moment=require('moment');
 
 module.exports= function(app){
-
     app.get("/getBotMsgTable", function (req, res) {
         res.sendFile(path.join(__dirname, '../pages/', 'botMsgTable.html'));
     });
 
     var botMsgTableColumns=[
-        {data: "ChID", name: "Номер", width: 100, type: "text", readOnly:true},
-        {data: "DocDate", name: "Дата рассылки", width: 100, type: "date", dateFormat:"DD.MM.YYYY", correctFormat: true /*,datetimeFormat:"DD.MM.YYYY"*/},
+        {data: "ChID", name: "Номер", width: 65, type: "numeric", readOnly:true},
+        {data: "DocDate", name: "Дата рассылки", width: 100, type: "date", dateFormat:"DD.MM.YYYY", correctFormat:true, align:"center"},
         {data: "Msg", name: "Текст сообщения", width: 400, type: "text"},
-        {data: "MsgHours", name: "Часы рассылки", width: 100, type: "text"},
-        {data: "SendHours", name: "Сообщения отправлены", width: 100, type: "text"}
+        {data: "MsgHours", name: "Часы рассылки", width: 100, type: "text", align:"center"},
+        {data: "SendHours", name: "Выполненные рассылки", width: 100, type: "text", align:"center", readOnly:true}
     ];
     app.get('/botMsg/getDataForTable', function (req, res) {
         database.getDataForTable({source:"it_BotMessages",
@@ -36,7 +34,6 @@ module.exports= function(app){
         })
     });
 };
-
 
 function setDataItemForTable(params, resultCallback){
     var itemData={};
