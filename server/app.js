@@ -48,7 +48,7 @@ try{
     require('./mainPage')(app);
     require('./clientsDCards')(app);
     require('./telegramMsg')(app);
-    // var telBot= require('./telBot');
+    var telBot= require('./telBot');
 } catch (e){
     console.log("FAILED TO LOAD APP MODULES! APP START IMPOSSIBLE! REASON:",e.message);
     logger.error("FAILED TO LOAD APP MODULES! APP START IMPOSSIBLE! REASON:",e.message);
@@ -60,5 +60,5 @@ db.connectToDB(function(){
         if(err) logger.error("FAILED TO START APP! REASON:",err.message);
         else logger.info("APP STARTED ON PORT ",appPort);
     });
-    // telBot.sendStartMsg();
+    telBot.sendStartMsg();
 });

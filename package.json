@@ -3,21 +3,17 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
   },
   "dependencies": {
-    "big-number": "^0.4.0",
     "bluebird": "^3.5.1",
     "body-parser": "~1.18.2",
     "cookie-parser": "~1.4.3",
-    "diskusage": "^0.2.4",
     "diskusage-ng": "^0.2.3",
     "express": "~4.15.5",
     "moment": "^2.20.1",
     "mssql": "^4.1.0",
     "node-cron": "^1.2.1",
     "node-telegram-bot-api": "^0.30.0",
-    "uniqid": "^4.1.1",
     "winston": "^2.4.0",
     "winston-daily-rotate-file": "^1.7.2"
   }

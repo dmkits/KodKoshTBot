@@ -1,8 +1,5 @@
 var logger=require('./logger')() ;
 var appConfig=require('./appConfig');
-
-var uid = require('uniqid');
-var BigNumber = require('big-number');
 var moment = require('moment');
 var mssql=require('mssql');
 var dbConnectionError=null;
@@ -114,7 +111,7 @@ function selectParamsMSSQLQuery(query, parameters, callback) {                  
             callback(null, result.recordset, result.rowsAffected.length);
         });
 }
-
+module.exports.selectParamsMSSQLQuery=selectParamsMSSQLQuery;
 /**
  * for MS SQL database query insert/update/delete
  * query= <MS SQL queryStr>
@@ -148,7 +145,7 @@ module.exports.executeMSSQLParamsQuery= function(query, parameters, callback) { 
             if (err) {                                                                          logger.error('database: executeMSSQLParamsQuery error:',err.message,{});//test
                 callback(err);
                 return;
-            }                                                                                   logger.debug('database: executeMSSQLParamsQuery:',result.recordset,{});//test
+            }                                                                                   logger.debug('database: executeMSSQLParamsQuery recordset:',result.recordset,{});//test
             callback(null, result.rowsAffected.length);
         });
 };

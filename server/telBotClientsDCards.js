@@ -1,10 +1,10 @@
 var logger=require('./logger')();
-
 var appConfig=require('./appConfig'),
     bot=require('./telBot.js'),
     database = require('./database');
 
 var cron = require('node-cron');
+var moment = require('moment');
 
 module.exports.checkAndRegisterClientsDCards = function(msg, phoneNumber){
     database.checkPhoneAndWriteChatID(phoneNumber,msg.chat.id,
@@ -24,7 +24,7 @@ module.exports.checkAndRegisterClientsDCards = function(msg, phoneNumber){
 };
 
 function startScheduleToSendDCardClientsMsg(){                                                              logger.info("startScheduleToSendDCardClientsMsg");
-    var dCardClientsSchedule=appConfig.getAppConfigParam("dCardClientsSchedule");
+    var dCardClientsSchedule="0 5 7-22/1 * * * ";
     if(!dCardClientsSchedule||cron.validate(dCardClientsSchedule)==false)return;
     var scheduledCardClientsMsg =cron.schedule(dCardClientsSchedule,
         function(){
@@ -34,23 +34,61 @@ function startScheduleToSendDCardClientsMsg(){                                  
 }
 startScheduleToSendDCardClientsMsg();
 
+
 function sendDCardsClientsMsg(){
-    database.getClientsForSendingMsg(function(err, chatIDDataArr){
+    var today=moment(new Date()).format('YYYY-MM-DD');
+    var curHour=new Date().getHours().toString();
+    var query="select * from it_BotMessages where (DocDate=@p0 and ','+MsgHours+',' like '%,'+@p1+',%') "; +
+        // "and (LTRIM(ISNULL(SendHours,''))='' " +
+        // "OR ','+SendHours+',' not like '%,'+@p1+',%')";
+    database.selectParamsMSSQLQuery (query,[today,curHour],
+        function(err, res){                  console.log("res=",res);
         if(err){
-            logger.error("FAILED to get clients chat id. Reason:"+err);
+            logger.error('Failed to get messages data for sending. Reason:'+err.message);
             return;
         }
-        sendMsgToDCardsClientsRecursively(0,chatIDDataArr);
+        if(!res || res.length==0) return;
+        var msgDataArr=res;
+            database.getClientsForSendingMsg(function(err, chatIDDataArr){
+                if(err){
+                    logger.error("FAILED to get clients chat id. Reason:"+err);
+                    return;
+                }
+                sendMsgRecursively(0,msgDataArr,curHour, chatIDDataArr);
+            })
     })
 }
-function sendMsgToDCardsClientsRecursively(index, data){
-    if(!data[index]&&index>0){
-        logger.info("All messages was sent successfully to "+index+" clients!");
+
+function sendMsgRecursively(index,msgDataArr,curHour, chatIDDataArr){
+    if(!msgDataArr[index]){
         return;
     }
-    bot.sendMessage(data[index].TChatID, "Дорогой клиент, рады сообщить, что Вы получили это сообщение!");
+    var MsgData=msgDataArr[index];
+    sendMsgToDCardsClientsRecursively(0,MsgData, chatIDDataArr, function(){
+        var query="update it_BotMessages  " +
+            "set SendHours=ISNULL(SendHours,'')+CASE When LTRIM(ISNULL(SendHours,''))<>'' Then ',' Else '' END+@p0 " +
+            "where ChID=@p1";
+        database.executeMSSQLParamsQuery(query,[curHour, MsgData["ChID"]],
+            function(err,res){
+                if(err){
+                    logger.error("Failed to update it_BotMessages after messages was sent. Reason: "+err.message);
+                    return;
+                }
+                sendMsgRecursively(index+1,curHour,msgDataArr, chatIDDataArr)
+        });
+    });
+};
+
+function sendMsgToDCardsClientsRecursively(index, MsgData, chatIDDataArr,callback){
+    if(!chatIDDataArr[index]){
+        callback();
+        return;
+    }
+    bot.sendMessage(chatIDDataArr[index]["TChatID"], MsgData["Msg"]);
     setTimeout(function(){
-        sendMsgToDCardsClientsRecursively(index+1, data)
+        sendMsgToDCardsClientsRecursively(index+1, MsgData, chatIDDataArr,callback)
     },300);
 }
+
+
 
