@@ -8,6 +8,8 @@ try {
 try {
     var express = require('express');
     var app = express();
+    var favicon = require('serve-favicon');
+    var path = require('path');
     var cookieParser = require('cookie-parser');
     var bodyParser = require('body-parser');
     app.use(cookieParser());
@@ -36,6 +38,8 @@ var appPort= appConfig.getAppConfigParam("appPort") || 80;
 process.on('uncaughtException', function(err) {
     logger.error('Server process failed! Reason:', err);
 });
+
+app.use(favicon(path.join(__dirname, '../public/icons', 'telegram16x16.ico')));
 
 app.use(function(req, res, next){
     logger.info(req.method," url=",req._parsedUrl.pathname," params:",req.query,{});
