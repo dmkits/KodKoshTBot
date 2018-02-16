@@ -11,6 +11,7 @@ module.exports= function(app){
         var outData = {};//main data
         var menuBar= [];//menu bar list
         outData.title= "BOT";
+        outData.mode= process.argv[2] || "config";
         database.connectToDB(function(DBConnectError){
             if (DBConnectError) outData.error= DBConnectError;
             menuBar.push({itemname:"menuBarItemBotMsg",itemtitle:"Рассылка сообщений",

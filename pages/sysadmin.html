@@ -36,7 +36,6 @@
         </div>
         <div id="sysadmin_TopActions">
             <button id="display_startup_params">Startup params</button>
-            <button id="display_DCards">DCards</button>
         </div>
     </div>
     <div id="sysadmin_ContentContainer"></div>
@@ -70,7 +69,7 @@
                 });
 
                 var startupBtn = new Button({id:"display_startup_params"},"display_startup_params");
-                var sqlBtn = new Button({id:"display_DCards"},"display_DCards");
+
 
                 var sysadmin_ContentContainer = APP.instanceForID("sysadmin_ContentContainer",
                         StackContainer, {region: "center", tabPosition: "top", class: "sysadmin_Content"});
@@ -83,18 +82,17 @@
                                 sysadmin_MainContainer.mainContentData = result;
                                 var eAppMode = document.getElementById("sysadmin_app_mode");
                                 var eAppPort = document.getElementById("sysadmin_app_port");
-                                eAppMode.innerHTML = "<b>MODE:</b>";
+                                eAppMode.innerHTML = "<b>CONFIGNAME:</b>";
                                 eAppPort.innerHTML = "<b>PORT:</b>";
                                 if(result.port){
                                     eAppPort.innerHTML=eAppPort.innerHTML+"<b style='color:dimgrey'>"+ result.port+"</b>";
                                 }
-                                if (result.mode) {
-                                    if (result.mode.toString().toLocaleLowerCase().indexOf("test") >= 0)
+                                if (result.mode)
+                                    if (result.mode.toString().toLocaleLowerCase().indexOf("test") >= 0 ||
+                                        result.mode.toString().toLocaleLowerCase().indexOf("dev") >= 0)
                                         eAppMode.innerHTML = eAppMode.innerHTML + "<b style='color:red'>" + result.mode + "</b>";
                                     else
                                         eAppMode.innerHTML = eAppMode.innerHTML + "<b style='color:dimgrey'>" + result.mode + "</b>";
-                                } else
-                                    eAppMode.innerHTML = eAppMode.innerHTML + "<b>UNKNOWN!!!</b>";
                                 if (result.configuration) {
                                     document.getElementById("sysadmin_dbName").innerHTML =
                                         "<b>DB NAME:<span style='color:dimgrey'>" + result.configuration.database + "</span></b>"
@@ -117,8 +115,7 @@
                                     sysadmin_MainContainer.mainContentData = [];
                                     sysadmin_MainContainer.mainContentData["error"] = result;
                                 }
-                        }
-                    )
+                        })
                 };
                 sysadmin_MainContainer.runSysadminContentPage = function (id, title, closable, contentURL) {
                     console.log("sysadmin_MainContainer.runSysadminContentPage: ", contentURL);//!!!IT'S FOR TESTING!!!
@@ -138,9 +135,6 @@
 
                 startupBtn.onClick=function() {
                    sysadmin_MainContainer.runSysadminContentPage("startup_parameters", "Startup parameters", false, "/sysadmin/startup_parameters");
-                };
-                sqlBtn.onClick=function(){
-                    sysadmin_MainContainer.runSysadminContentPage("getDCards", "DCards", false, "/sysadmin/getDCards");
                 };
                 sysadmin_MainContainer.getAppState();
             });

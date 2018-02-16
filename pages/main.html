@@ -69,16 +69,13 @@
                                     main_MainContainer.mainContentData = result;
 
                                     var eAppMode = document.getElementById("main_app_mode");
-                                    if (result.mode && result.mode!=="production") {
-                                        var modeName = result.modeName;
-                                        if (!modeName) modeName= result.mode;
+                                    if (result.mode)
+                                        var modeName = result.mode;
                                         if (modeName.toLocaleLowerCase().indexOf("test")>=0)
-                                            eAppMode.innerHTML = "<b style='color:red'>" + modeName + "</b>";
-                                        else
-                                            eAppMode.innerHTML = "<b>" + modeName + "</b>";
-                                    } else if (!result.mode)
-                                        eAppMode.innerHTML =  eAppMode.innerHTML+"<b>UNKNOWN MODE!!!</b>";
-
+                                            eAppMode.innerHTML = "<b style='color:red'> TEST (" + modeName + ")</b>";
+                                        else if (modeName.toLocaleLowerCase().indexOf("dev")>=0)
+                                            eAppMode.innerHTML = "<b style='color:red'> DEVELOPMENT (" + modeName + ")</b>";
+                                         else eAppMode.innerHTML =  eAppMode.innerHTML+"";
                                     if(result.user) document.getElementById("main_username").innerHTML =  "<b>"+result.user+"</b>";
                                     if(result.error){
                                         main_MainContainer.mainContentData = [];

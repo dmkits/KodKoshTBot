@@ -515,7 +515,7 @@ define(["dojo/_base/declare", "hTableSimpleFiltered","dijit/ProgressBar","dijit/
                 if (dataItem.indexOf("<!$")<0&&dataItem.indexOf("$!>")<0) storingData[dataItem] = rowData[dataItem];
             var thisInstance = this;
             Request.postJSONData({url:params.url,condition:params.condition,data:storingData}
-                ,function(result,error){       console.log("result  518=",result);
+                ,function(result,error){
                     if(!result){
                         rowData["<!$error$!>"]= "Не удалось получить результат операции с сервера!";
 //                        instance.setErrorsCommentsForRow(storeRow,resultItem);

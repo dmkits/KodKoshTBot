@@ -40,10 +40,10 @@ module.exports= function(app) {
             });
 
     });
-    app.post("/DCards/storeDCardsTableData", function(req, res){
-        database.storeTableDataItem({tableName:"r_DCards",idFieldName:"ChID",tableColumns:dCardsTableColumns,
-            storeTableData:req.body}, function(err, res/*updateCount, resultItem*/){
-
-        })
-    });
+    // app.post("/DCards/storeDCardsTableData", function(req, res){
+    //     database.storeTableDataItem({tableName:"r_DCards",idFieldName:"ChID",tableColumns:dCardsTableColumns,
+    //         storeTableData:req.body}, function(err, res/*updateCount, resultItem*/){
+    //
+    //     })
+    // });
 };
